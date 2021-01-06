@@ -11,8 +11,8 @@
                 <markdown-editor v-model="form.content"
                                  min-height="200px"
                                  max-height="200px"
-                                 :preview-render-func="previewRenderFunc"
-                                 :upload-func="onUpload"
+                                 :preview-render-func="previewRenderFuncProxy"
+                                 :upload-func="uploadFileFuncProxy"
                 />
             </div>
             <div class="col">
@@ -20,8 +20,8 @@
                 <markdown-editor v-model="form.additional_content"
                                  min-height="200px"
                                  max-height="200px"
-                                 :preview-render-func="previewRenderFunc"
-                                 :upload-func="onUpload"
+                                 :preview-render-func="previewRenderFuncProxy"
+                                 :upload-func="uploadFileFuncProxy"
                 />
             </div>
         </div>
@@ -34,14 +34,13 @@ import {Prop, Vue, Watch} from "vue-property-decorator";
 import MarkdownEditor from "./MarkdownEditor.vue";
 import {ITask} from "../models/Task";
 import DifficultSelector from "./DifficultSelector.vue";
+import {previewRenderFunc, uploadFileFunc} from "../utils";
 
 @Component({
     components: {DifficultSelector, MarkdownEditor}
 })
 export default class TaskEditor extends Vue {
     @Prop() task!: any;
-    @Prop() previewRenderFunc!: any;
-    @Prop() onUpload!: any;
 
     form: ITask | null = {
         title: null,
@@ -54,6 +53,14 @@ export default class TaskEditor extends Vue {
         additional_content: "",
         visible: null,
     };
+
+    previewRenderFuncProxy (text: string) {
+        return previewRenderFunc(text, this.$store.state.activeDiscipline.jekyll_folder)
+    }
+
+    uploadFileFuncProxy (file: File) {
+        return uploadFileFunc(file, this.$store.state.activeDiscipline.jekyll_folder)
+    }
 
     @Watch("task")
     onTaskChange() {

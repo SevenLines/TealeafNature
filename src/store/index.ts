@@ -2,9 +2,11 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import Discipline from "../models/Discipline";
 import Lab from "../models/Lab";
+import * as fs from "fs";
+import _ from 'lodash';
+import path from "path";
 
 Vue.use(Vuex)
-
 
 
 export default new Vuex.Store({
@@ -31,6 +33,21 @@ export default new Vuex.Store({
         setActiveLab(state, lab) {
             state.activeLab = lab;
         },
+    },
+    getters: {
+        activeDisciplineArticles({activeDiscipline}) {
+            let files = [];
+            if (!_.isEmpty(activeDiscipline)) {
+                let jekyll_folder = (activeDiscipline as any).jekyll_folder
+                if (jekyll_folder) {
+                    let dir = path.join(jekyll_folder, "common")
+                    if (fs.existsSync(dir)) {
+                        files = fs.readdirSync(dir);
+                    }
+                }
+            }
+            return files;
+        }
     },
     actions: {
         async fetchDisciplines({commit}) {
@@ -66,5 +83,4 @@ export default new Vuex.Store({
             await dispatch("fetchTasks")
         },
     },
-    modules: {}
 })

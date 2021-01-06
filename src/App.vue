@@ -3,7 +3,7 @@
         <div class="d-flex flex-column w-100">
             <b-navbar toggleable="lg" variant="light">
                 <b-container>
-                    <b-navbar-brand class="ml-2">
+                    <b-navbar-brand to="/" class="ml-2">
                         <i class="fad fa-mug-hot"></i> Чаинка Натуральная
                     </b-navbar-brand>
                     <b-breadcrumb v-if="breadcrumbs.length" class="mr-2">
@@ -41,19 +41,30 @@ export default class App extends Vue {
     get breadcrumbs() {
         let result = []
 
-        if (this.$route.name == "DisciplinePage" || this.$route.name == "LabPage") {
-            result.push({
-                "to": `/`,
+        if (this.$route.name == "DisciplinePage" || this.$route.name == "LabPage"  || this.$route.name == "ArticleEditor") {
+             result.push({
+                "to": `/discipline/${this.activeDiscipline.id}`,
                 "title": this.activeDiscipline.title,
             })
         }
 
-        if (this.$route.name == "LabPage") {
+        if (this.$route.name == "LabPage" ) {
             result.push({
-                "to": `/discipline/${this.activeDiscipline.id}`,
+                "to": `/lab/${this.activeLab.id}`,
                 "title": `<i class="${this.activeLab.icon}"></i> ${this.activeLab.title}`,
             })
         }
+
+        if (this.$route.name == "ArticleEditor" ) {
+            result.push({
+                "to": `/discipline/${this.activeDiscipline.id}/article/${this.$route.params.article}`,
+                "title": `<i class="fas fa-file-code"></i> ${this.$route.params.article}`,
+            })
+        }
+
+        // if (this.$route.name == "ArticleEditor") {
+        //
+        // }
 
         return result
     }

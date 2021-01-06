@@ -3,6 +3,7 @@ import VueRouter, {RouteConfig} from 'vue-router'
 import Dashboard from "../views/Dashboard.vue";
 import DisciplinePage from "../views/DisciplinePage.vue";
 import LabPage from "../views/LabPage.vue";
+import ArticleEditor from "../views/ArticleEditor.vue";
 
 Vue.use(VueRouter)
 
@@ -11,6 +12,11 @@ const routes: Array<RouteConfig> = [
         path: '/',
         name: 'Dashboard',
         component: Dashboard
+    },
+    {
+        path: '/discipline/:disciplineId/article/:article',
+        name: 'ArticleEditor',
+        component: ArticleEditor
     },
     {
         path: '/discipline/:disciplineId',

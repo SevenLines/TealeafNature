@@ -6,6 +6,7 @@
     import {Component, Prop, Vue, Watch} from "vue-property-decorator";
     import EasyMDE from 'easymde';
     import marked from 'marked'
+    import hljs from 'highlight.js'
 
     @Component
     export default class MarkdownEditor extends Vue {
@@ -17,6 +18,7 @@
         @Prop() customRenderFunction!: null;
         @Prop() uploadFunc?: Function;
         @Prop() previewRenderFunc?: Function;
+        @Prop() sideBySideFullscreen?: true;
 
         private mde?: EasyMDE;
 
@@ -39,6 +41,7 @@
                 maxHeight: this.maxHeight,
                 minHeight: this.minHeight,
                 imageAccept: "image/png,image/jpeg,image/gif,docx,xlsx",
+                sideBySideFullscreen: this.sideBySideFullscreen,
                 async imageUploadFunction(file: any, onSuccess: any) {
                     if (self.uploadFunc != null) {
                         let data = await self.uploadFunc(file);
@@ -54,6 +57,10 @@
                     }
                     return result; // Returns HTML from a custom parser
                 },
+                renderingConfig: {
+                    codeSyntaxHighlighting: true,
+                    hljs
+                }
             });
             if (this.mde) {
                 this.mde.value(this.value);

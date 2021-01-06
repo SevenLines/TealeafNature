@@ -12,7 +12,8 @@
                 <b-button size="sm" :variant="task.visible ? 'success' : 'outline-success'" @click="$emit('eye')">
                     <i class="fas" :class="{'fa-eye': task.visible, 'fa-eye-slash': !task.visible}"></i>
                 </b-button>
-                <b-button class="ml-2" size="sm" variant="danger" @click="$emit('remove')"><i class="fas fa-trash-alt"></i>
+                <b-button class="ml-2" size="sm" variant="danger" @click="$emit('remove')"><i
+                    class="fas fa-trash-alt"></i>
                 </b-button>
             </div>
         </div>
@@ -20,19 +21,32 @@
 </template>
 
 <script>
-import {Prop, Vue} from "vue-property-decorator";
+import {Prop, Vue, Watch} from "vue-property-decorator";
 import Component from "vue-class-component";
 import {ComplexityTypes} from "@/consts";
-import marked from 'marked';
+import {previewRenderFunc} from "@/utils";
+import hljs from "highlight.js"
 
 @Component({})
 export default class TaskItem extends Vue {
     @Prop() activeTask;
     @Prop() task;
-    @Prop() previewRenderFunc;
+
+    @Watch("contentRendered", {
+        immediate: true
+    })
+    onContentRenderedChanged() {
+        console.log("change")
+        this.$nextTick(() => {
+                this.$el.querySelectorAll("pre").forEach(block => {
+                hljs.highlightBlock(block);
+            });
+        })
+
+    }
 
     get contentRendered() {
-        let text = this.previewRenderFunc(this.task.content);
+        let text = previewRenderFunc(this.task.content, this.$store.state.activeDiscipline.jekyll_folder);
         return text
     }
 
@@ -68,6 +82,7 @@ export default class TaskItem extends Vue {
 
 <style lang="scss">
 @import "../consts";
+@import "~highlightjs/styles/default.css";
 
 .tasks-item-index {
 
