@@ -17,6 +17,7 @@
                 <router-view/>
             </div>
         </div>
+        <notifications group="messages" />
     </div>
 </template>
 

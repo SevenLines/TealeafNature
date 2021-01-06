@@ -4,6 +4,8 @@ import router from './router'
 import store from './store'
 import "reflect-metadata";
 import {BootstrapVue, IconsPlugin} from 'bootstrap-vue'
+import Notifications from 'vue-notification'
+
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
@@ -15,7 +17,7 @@ Vue.config.productionTip = false
 Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
-
+Vue.use(Notifications)
 
 
 new Vue({

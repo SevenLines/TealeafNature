@@ -1,16 +1,17 @@
 <template>
     <div>
         <div class="d-flex justify-content-between mb-4">
-            <b-button size="sm" class="mr-2" variant="danger" @click="onSaveClick">Сохранить</b-button>
+            <b-button size="sm" class="mr-2" variant="danger" @click="onSaveClick" >Сохранить</b-button>
+            <difficult-selector v-model="form.complexity"></difficult-selector>
             <b-button size="sm" variant="info" @click="$emit('cancel')">Отменить</b-button>
         </div>
         <div v-show="form" class="row">
             <div class="col">
-                <label for="">Описание</label>
+                <label>Описание</label>
                 <markdown-editor v-model="form.content" min-height="200px" max-height="200px"></markdown-editor>
             </div>
             <div class="col">
-                <label for="">Подсказка</label>
+                <label>Подсказка</label>
                 <markdown-editor v-model="form.additional_content" min-height="200px"
                                  max-height="200px"></markdown-editor>
             </div>
@@ -23,9 +24,10 @@ import Component from "vue-class-component";
 import {Prop, Vue, Watch} from "vue-property-decorator";
 import MarkdownEditor from "./MarkdownEditor.vue";
 import {ITask} from "../models/Task";
+import DifficultSelector from "./DifficultSelector.vue";
 
 @Component({
-    components: {MarkdownEditor}
+    components: {DifficultSelector, MarkdownEditor}
 })
 export default class TaskEditor extends Vue {
     @Prop() task!: any;
@@ -59,7 +61,7 @@ export default class TaskEditor extends Vue {
 
 
     onSaveClick() {
-        this.$emit("save")
+        this.$emit("save", this.form)
     }
 }
 </script>

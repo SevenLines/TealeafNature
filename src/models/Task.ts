@@ -12,6 +12,7 @@ export const Task = db.define("Task", {
     tags: DataTypes.ARRAY(DataTypes.STRING),
     visible: DataTypes.BOOLEAN,
     group_id: DataTypes.NUMBER,
+    lab_id: DataTypes.NUMBER,
     custom_class: DataTypes.STRING,
 }, {
     tableName: "lessons_task",
@@ -27,6 +28,7 @@ export interface ITask {
     tags: string,
     visible: boolean,
     group_id: number,
+    lab_id: number,
     custom_class: string,
 }
 
