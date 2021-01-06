@@ -8,14 +8,17 @@
             </div>
             <div class="flex-grow-1 overflow-auto p-2">
                 <div class="container">
-                    <task-item class="m-2"
-                               :task="t"
-                               v-for="t in tasks"
-                               :key="t.id"
-                               :active-task="activeTask"
-                               @edit="onEdit(t)"
-                               @remove="onRemove(t)"
-                    ></task-item>
+                    <draggable v-model="tasks" group="people" @start="drag=true" @end="drag=false">
+                        <task-item class="m-2"
+                                   :task="t"
+                                   v-for="t in tasks"
+                                   :key="t.id"
+                                   :active-task="activeTask"
+                                   @edit="onEdit(t)"
+                                   @eye="onEyeClick(t)"
+                                   @remove="onRemove(t)"
+                        ></task-item>
+                    </draggable>
                 </div>
             </div>
             <task-editor
@@ -41,13 +44,12 @@ import draggable from 'vuedraggable'
 import TaskEditor from "./TaskEditor.vue";
 import Task, {ITask} from "../models/Task";
 import {ComplexityTypes} from "../consts";
-
+import _ from 'lodash';
 
 @Component({
-    components: {TaskEditor, TaskItem},
+    components: {TaskEditor, TaskItem, draggable},
     computed: {
         ...mapState({
-            tasks: "tasks",
             activeDiscipline: "activeDiscipline",
             activeLab: "activeLab",
         })
@@ -69,19 +71,24 @@ export default class LabPage extends Vue {
         }
     }
 
+    async onEyeClick(task) {
+        task.visible = !task.visible
+        await task.save()
+    }
+
     async onRemove(task) {
         let doDelete = await this.$bvModal.msgBoxConfirm(
             'Точно удалить задачу?', {
-            title: 'Подтвердите',
-            size: 'sm',
-            buttonSize: 'sm',
-            okVariant: 'danger',
-            okTitle: 'Удалить',
-            cancelTitle: 'НЕЕЕЕТ!!!',
-            footerClass: 'p-2',
-            hideHeaderClose: false,
-            centered: true
-        })
+                title: 'Подтвердите',
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'Удалить',
+                cancelTitle: 'НЕЕЕЕТ!!!',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
         if (doDelete) {
             await task.destroy();
             await this.$store.dispatch("fetchTasks")
@@ -90,9 +97,7 @@ export default class LabPage extends Vue {
 
     async onSaveTaskClick(task_form: ITask) {
         this.activeTask.title = task_form.title;
-        // this.activeTask.tags = task_form.tags;
         this.activeTask.order = task_form.order;
-        // this.activeTask.group_id = task_form.group_id;
         this.activeTask.custom_class = task_form.custom_class;
         this.activeTask.content = task_form.content;
         this.activeTask.complexity = task_form.complexity;
@@ -119,7 +124,7 @@ export default class LabPage extends Vue {
     async onAddTaskClick() {
         let task = Task.build({
             title: "",
-            order: 0,
+            order: _(this.tasks).map(x => x.order).max() + 1,
             custom_class: "",
             content: "",
             complexity: ComplexityTypes.easy,
@@ -128,6 +133,15 @@ export default class LabPage extends Vue {
             lab_id: this.activeLab.id,
         })
         this.activeTask = task;
+    }
+
+    get tasks() {
+        return this.$store.state.tasks;
+    }
+
+    set tasks(tasks) {
+        this.$store.commit("setTasks", tasks)
+        this.$store.dispatch("updateTasksOrder", tasks)
     }
 }
 </script>

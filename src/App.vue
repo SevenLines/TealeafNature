@@ -3,10 +3,10 @@
         <div class="d-flex flex-column w-100">
             <b-navbar toggleable="lg" variant="light">
                 <b-container>
-                    <b-navbar-brand>
-                        Чаинка Натуральная
+                    <b-navbar-brand class="ml-2">
+                        <i class="fad fa-mug-hot"></i> Чаинка Натуральная
                     </b-navbar-brand>
-                    <b-breadcrumb v-if="breadcrumbs.length">
+                    <b-breadcrumb v-if="breadcrumbs.length" class="mr-2">
                         <b-breadcrumb-item :to="item.to" v-for="item in breadcrumbs" :key="item.to">
                             <span v-html="item.title"></span>
                         </b-breadcrumb-item>

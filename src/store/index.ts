@@ -42,7 +42,7 @@ export default new Vuex.Store({
             commit("setLabs", r)
         },
         async fetchTasks({commit, state}) {
-            let r = await (state.activeLab as any).getTasks({order: ["group_id", "order"]});
+            let r = await (state.activeLab as any).getTasks({order: ["order"]});
             commit("setTasks", r)
         },
         async setActiveDisciplineId({commit, state, dispatch}, disciplineId) {
@@ -56,7 +56,15 @@ export default new Vuex.Store({
             dispatch("setActiveDisciplineId", discipline.id)
             commit("setActiveLab", lab)
             dispatch("fetchTasks")
-        }
+        },
+        async updateTasksOrder({commit, state, dispatch}, tasks) {
+            for (const t of tasks) {
+                let index = tasks.indexOf(t);
+                t.order = index + 1
+                await t.save()
+            }
+            await dispatch("fetchTasks")
+        },
     },
     modules: {}
 })
