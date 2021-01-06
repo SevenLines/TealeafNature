@@ -1,33 +1,37 @@
 <template>
     <div>
         <div v-for="d in disciplines" :key="d.id">
-            <a href="#" @click="setDiscipline(d)">
+            <router-link :to="`/discipline/${d.id}`">
                 {{d.title}}
-            </a>
+            </router-link>
         </div>
     </div>
 </template>
 
 <script lang="ts">
 
-import {Component, Vue} from "vue-property-decorator";
-import {mapState} from "vuex";
+import {Vue, Watch} from "vue-property-decorator";
+import {mapActions, mapState} from "vuex";
+import Component from "vue-class-component";
 
 @Component({
     computed: {
         ...mapState({
             disciplines: "disciplines"
-        })
-    }
+        }),
+
+    },
+    methods: {
+        ...mapActions({
+            setActiveDiscipline: "setActiveDiscipline",
+            fetchDisciplines: "fetchDisciplines",
+        }),
+    },
+
 })
 export default class Dashboard extends Vue {
     created() {
         this.$store.dispatch("fetchDisciplines")
-    }
-
-    setDiscipline(discipline) {
-        this.$store.commit("setActiveDiscipline", discipline)
-        this.$store.dispatch("fetchLabs")
     }
 }
 </script>

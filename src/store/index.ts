@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Discipline from "../models/Discipline";
+import Lab from "../models/Lab";
 
 Vue.use(Vuex)
 
@@ -10,6 +11,7 @@ export default new Vuex.Store({
     state: {
         disciplines: [],
         labs: [],
+        tasks: [],
         activeDiscipline: {},
         activeLab: {},
     },
@@ -19,6 +21,9 @@ export default new Vuex.Store({
         },
         setLabs(state, labs) {
             state.labs = labs;
+        },
+        setTasks(state, tasks) {
+            state.tasks = tasks;
         },
         setActiveDiscipline(state, discipline) {
             state.activeDiscipline = discipline;
@@ -36,9 +41,21 @@ export default new Vuex.Store({
             let r = await (state.activeDiscipline as any).getLabs();
             commit("setLabs", r)
         },
-        async setActiveLab({commit, state, dispatch}, discipline) {
+        async fetchTasks({commit, state}) {
+            let r = await (state.activeLab as any).getTasks();
+            commit("setTasks", r)
+        },
+        async setActiveDisciplineId({commit, state, dispatch}, disciplineId) {
+            let discipline = await Discipline.findOne({where: {id: disciplineId}})
             commit("setActiveDiscipline", discipline)
             dispatch("fetchLabs")
+        },
+        async setActiveLabId({commit, state, dispatch}, labId) {
+            let lab = await Lab.findOne({where: {id: labId}, include: Discipline})
+            let discipline = await (lab as any).getDiscipline();
+            dispatch("setActiveDisciplineId", discipline.id)
+            commit("setActiveLab", lab)
+            dispatch("fetchTasks")
         }
     },
     modules: {}

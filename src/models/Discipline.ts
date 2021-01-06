@@ -17,6 +17,7 @@ export const Discipline = db.define("Discipline", {
     tableName: "lessons_discipline",
     timestamps: false
 });
+
 Discipline.hasMany(Lab, {
     foreignKey: {
         field: "discipline_id"

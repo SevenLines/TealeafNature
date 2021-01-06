@@ -1,43 +1,21 @@
-// import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-// import {Lab} from "./Lab";
-//
-// @Entity()
-// export class Task {
-//     @PrimaryGeneratedColumn()
-//     id: number;
-//
-//
-//     @Column()
-//     title: string;
-//
-//     @ManyToOne(type => Lab, lab => lab.tasks)
-//     @JoinColumn()
-//     lab: string;
-//
-//     @Column()
-//     complexity: string;
-//
-//     @Column()
-//     content: string;
-//
-//     @Column()
-//     additional_content: string;
-//
-//     @Column()
-//     order: string;
-//
-//     @Column()
-//     tags: string;
-//
-//     @Column()
-//     visible: string;
-//
-//     @Column()
-//     students: string;
-//
-//     @Column()
-//     group: string;
-//
-//     @Column()
-//     custom_class: string;
-// }
+import {db} from "../db";
+import Lab from "./Lab";
+const {DataTypes} = require('sequelize');
+
+
+export const Task = db.define("Task", {
+    title: DataTypes.STRING,
+    complexity: DataTypes.NUMBER,
+    content: DataTypes.STRING,
+    additional_content: DataTypes.STRING,
+    order: DataTypes.NUMBER,
+    tags: DataTypes.ARRAY(DataTypes.STRING),
+    visible: DataTypes.BOOLEAN,
+    group_id: DataTypes.NUMBER,
+    custom_class: DataTypes.STRING,
+}, {
+    tableName: "lessons_task",
+    timestamps: false
+})
+
+export default Task
