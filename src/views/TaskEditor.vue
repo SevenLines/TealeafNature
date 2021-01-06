@@ -1,19 +1,26 @@
 <template>
     <div>
         <div class="d-flex justify-content-between mb-4">
-            <b-button size="sm" class="mr-2" variant="danger" @click="onSaveClick" >Сохранить</b-button>
+            <b-button size="sm" class="mr-2" variant="danger" @click="onSaveClick">Сохранить</b-button>
             <difficult-selector v-model="form.complexity"></difficult-selector>
             <b-button size="sm" variant="info" @click="$emit('cancel')">Отменить</b-button>
         </div>
         <div v-show="form" class="row">
             <div class="col">
                 <label>Описание</label>
-                <markdown-editor v-model="form.content" min-height="200px" max-height="200px"></markdown-editor>
+                <markdown-editor v-model="form.content"
+                                 min-height="200px"
+                                 max-height="200px"
+                                 :preview-render-func="previewRenderFunc"
+                />
             </div>
             <div class="col">
                 <label>Подсказка</label>
-                <markdown-editor v-model="form.additional_content" min-height="200px"
-                                 max-height="200px"></markdown-editor>
+                <markdown-editor v-model="form.additional_content"
+                                 min-height="200px"
+                                 max-height="200px"
+                                 :preview-render-func="previewRenderFunc"
+                />
             </div>
         </div>
     </div>
@@ -31,6 +38,7 @@ import DifficultSelector from "./DifficultSelector.vue";
 })
 export default class TaskEditor extends Vue {
     @Prop() task!: any;
+    @Prop() previewRenderFunc!: any;
 
     form: ITask | null = {
         title: null,
@@ -59,9 +67,23 @@ export default class TaskEditor extends Vue {
         }
     }
 
-
     onSaveClick() {
         this.$emit("save", this.form)
+    }
+
+    mounted() {
+        document.addEventListener("keydown", this.onKey);
+    }
+
+    beforeDestroy() {
+        document.removeEventListener("keydown", this.onKey);
+    }
+
+    onKey(e: any) {
+        if (e.ctrlKey && (e.which == 83)) {
+            e.preventDefault();
+            this.onSaveClick()
+        }
     }
 }
 </script>

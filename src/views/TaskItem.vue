@@ -24,9 +24,10 @@ import marked from 'marked';
 export default class TaskItem extends Vue {
     @Prop() activeTask;
     @Prop() task;
+    @Prop() previewRenderFunc;
 
     get contentRendered() {
-        let text = marked(this.task.content);
+        let text = this.previewRenderFunc(this.task.content);
         return text
     }
 

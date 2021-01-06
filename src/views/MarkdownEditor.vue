@@ -80,7 +80,12 @@
     @import "~easymde/dist/easymde.min.css";
 </style>
 
-<style>
+<style lang="scss">
+.EasyMDEContainer {
+    img {
+        max-width: 100%;
+    }
+}
 
 /*.CodeMirror,*/
 /*.CodeMirror-scroll {*/

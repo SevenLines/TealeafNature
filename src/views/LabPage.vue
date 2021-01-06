@@ -14,6 +14,7 @@
                                    v-for="t in tasks"
                                    :key="t.id"
                                    :active-task="activeTask"
+                                   :preview-render-func="previewRenderFunc"
                                    @edit="onEdit(t)"
                                    @eye="onEyeClick(t)"
                                    @remove="onRemove(t)"
@@ -26,6 +27,7 @@
                 style=" box-sizing: border-box"
                 :class="{'active': !!activeTask}"
                 :task="activeTask"
+                :preview-render-func="previewRenderFunc"
                 @cancel="activeTask=null"
                 @save="onSaveTaskClick"
             >
@@ -45,6 +47,8 @@ import TaskEditor from "./TaskEditor.vue";
 import Task, {ITask} from "../models/Task";
 import {ComplexityTypes} from "../consts";
 import _ from 'lodash';
+import path from "path";
+import marked from "marked";
 
 @Component({
     components: {TaskEditor, TaskItem, draggable},
@@ -61,6 +65,15 @@ export default class LabPage extends Vue {
     @Watch("$route", {deep: true, immediate: true})
     onRouteChange() {
         this.$store.dispatch("setActiveLabId", this.$route.params.labId)
+    }
+
+    get tasks() {
+        return this.$store.state.tasks;
+    }
+
+    set tasks(tasks) {
+        this.$store.commit("setTasks", tasks)
+        this.$store.dispatch("updateTasksOrder", tasks)
     }
 
     onEdit(task) {
@@ -135,13 +148,11 @@ export default class LabPage extends Vue {
         this.activeTask = task;
     }
 
-    get tasks() {
-        return this.$store.state.tasks;
-    }
-
-    set tasks(tasks) {
-        this.$store.commit("setTasks", tasks)
-        this.$store.dispatch("updateTasksOrder", tasks)
+    previewRenderFunc(text: string) {
+        let dir = "file://" + this.activeDiscipline.jekyll_folder.replace(/\\/g, "/");
+        text = text.replace(/(!\[.*?\]\()(\/assets.*?)(\))/g, `$1${dir}$2$3`)
+        text = marked(text)
+        return text;
     }
 }
 </script>
