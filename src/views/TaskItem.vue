@@ -2,14 +2,19 @@
     <div class="task" :class="klass" :style="style">
         <div class="task-rendered-content" v-html="contentRendered"></div>
         <div class="d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+                <b-button size="sm" variant="info" @click="$emit('edit')"><i class="fad fa-edit"></i>
+                </b-button>
+                <b-button class="ml-2" size="sm" variant="warning" @click="$emit('tip')">Подсказка</b-button>
+                <div class="ml-2">id: {{ task.id }}</div>
+            </div>
             <div>
                 <b-button size="sm" :variant="task.visible ? 'success' : 'outline-success'" @click="$emit('eye')">
                     <i class="fas" :class="{'fa-eye': task.visible, 'fa-eye-slash': !task.visible}"></i>
                 </b-button>
-                <b-button class="ml-2" size="sm" variant="info" @click="$emit('edit')"><i class="fad fa-edit"></i></b-button>
-                <b-button class="ml-2" size="sm" variant="warning" @click="$emit('tip')">Подсказка</b-button>
+                <b-button class="ml-2" size="sm" variant="danger" @click="$emit('remove')"><i class="fas fa-trash-alt"></i>
+                </b-button>
             </div>
-            <b-button size="sm" variant="danger" @click="$emit('remove')"><i class="fas fa-trash-alt"></i></b-button>
         </div>
     </div>
 </template>

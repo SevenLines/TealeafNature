@@ -12,6 +12,7 @@
                                  min-height="200px"
                                  max-height="200px"
                                  :preview-render-func="previewRenderFunc"
+                                 :upload-func="onUpload"
                 />
             </div>
             <div class="col">
@@ -20,6 +21,7 @@
                                  min-height="200px"
                                  max-height="200px"
                                  :preview-render-func="previewRenderFunc"
+                                 :upload-func="onUpload"
                 />
             </div>
         </div>
@@ -39,6 +41,7 @@ import DifficultSelector from "./DifficultSelector.vue";
 export default class TaskEditor extends Vue {
     @Prop() task!: any;
     @Prop() previewRenderFunc!: any;
+    @Prop() onUpload!: any;
 
     form: ITask | null = {
         title: null,

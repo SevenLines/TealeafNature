@@ -28,6 +28,7 @@
                 :class="{'active': !!activeTask}"
                 :task="activeTask"
                 :preview-render-func="previewRenderFunc"
+                :on-upload="onUpload"
                 @cancel="activeTask=null"
                 @save="onSaveTaskClick"
             >
@@ -49,6 +50,8 @@ import {ComplexityTypes} from "../consts";
 import _ from 'lodash';
 import path from "path";
 import marked from "marked";
+import fs from "fs";
+import {Buffer} from "buffer";
 
 @Component({
     components: {TaskEditor, TaskItem, draggable},
@@ -146,6 +149,30 @@ export default class LabPage extends Vue {
             lab_id: this.activeLab.id,
         })
         this.activeTask = task;
+    }
+
+    async onUpload(file: File) {
+        let assets_folder = path.join('assets', "tasks");
+        let folder = path.join(this.activeDiscipline.jekyll_folder, assets_folder)
+
+        if (!fs.existsSync(folder)) {
+            fs.mkdirSync(folder);
+        }
+
+        let length = fs.readdirSync(folder).length
+        let filename = `${String(length).padStart(3, '0')}_${file.name.trim()}`
+
+        console.log(filename)
+
+        let arrayBuffer = await file.arrayBuffer();
+        let buffer = Buffer.from(arrayBuffer);
+        fs.writeFile(path.join(folder, filename), (buffer as any), err => {
+            if (err) return console.log(err);
+        })
+
+        return {
+            link: path.join("/", assets_folder, filename).replace(/\s/, "%20").replace(/\\/g, "/"),
+        }
     }
 
     previewRenderFunc(text: string) {
