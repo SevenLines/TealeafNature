@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container mt-4">
         <div v-for="d in disciplines" :key="d.id">
             <router-link :to="`/discipline/${d.id}`">
                 {{d.title}}

@@ -1,20 +1,22 @@
 <template>
-    <div id="app">
-        <b-navbar toggleable="lg" variant="light" fixed="top">
-            <b-container>
-                <b-navbar-brand>
-                    Чаинка Натуральная
-                </b-navbar-brand>
-                <b-breadcrumb v-if="breadcrumbs.length">
-                    <b-breadcrumb-item :to="item.to" v-for="item in breadcrumbs" :key="item.to">
-                        <span v-html="item.title"></span>
-                    </b-breadcrumb-item>
-                </b-breadcrumb>
-            </b-container>
-        </b-navbar>
-        <b-container>
-            <router-view style="margin-top:80px"/>
-        </b-container>
+    <div id="app" class="d-flex" style="height: 100%">
+        <div class="d-flex flex-column w-100">
+            <b-navbar toggleable="lg" variant="light">
+                <b-container>
+                    <b-navbar-brand>
+                        Чаинка Натуральная
+                    </b-navbar-brand>
+                    <b-breadcrumb v-if="breadcrumbs.length">
+                        <b-breadcrumb-item :to="item.to" v-for="item in breadcrumbs" :key="item.to">
+                            <span v-html="item.title"></span>
+                        </b-breadcrumb-item>
+                    </b-breadcrumb>
+                </b-container>
+            </b-navbar>
+            <div class="flex-grow-1 overflow-auto">
+                <router-view/>
+            </div>
+        </div>
     </div>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container mt-4">
         <b-form-group label="Название">
             <b-input v-model="form.title">
             </b-input>
