@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import VueRouter, {RouteConfig} from 'vue-router'
 import Dashboard from "../views/Dashboard.vue";
-import Labs from "../views/Labs.vue";
-import Tasks from "../views/Tasks.vue";
+import DisciplinePage from "../views/DisciplinePage.vue";
+import LabPage from "../views/LabPage.vue";
 
 Vue.use(VueRouter)
 
@@ -14,13 +14,13 @@ const routes: Array<RouteConfig> = [
     },
     {
         path: '/discipline/:disciplineId',
-        name: 'Labs',
-        component: Labs
+        name: 'DisciplinePage',
+        component: DisciplinePage
     },
     {
         path: '/lab/:labId',
-        name: 'Tasks',
-        component: Tasks
+        name: 'LabPage',
+        component: LabPage
     },
     // {
     //   path: '/about',

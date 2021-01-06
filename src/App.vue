@@ -1,11 +1,20 @@
 <template>
     <div id="app">
-        <b-breadcrumb v-if="breadcrumbs.length">
-            <b-breadcrumb-item :to="item.to" v-for="item in breadcrumbs" :key="item.to">
-                {{item.title}}
-            </b-breadcrumb-item>
-        </b-breadcrumb>
-        <router-view/>
+        <b-navbar toggleable="lg" variant="light" fixed="top">
+            <b-container>
+                <b-navbar-brand>
+                    Чаинка Натуральная
+                </b-navbar-brand>
+                <b-breadcrumb v-if="breadcrumbs.length">
+                    <b-breadcrumb-item :to="item.to" v-for="item in breadcrumbs" :key="item.to">
+                        <span v-html="item.title"></span>
+                    </b-breadcrumb-item>
+                </b-breadcrumb>
+            </b-container>
+        </b-navbar>
+        <b-container>
+            <router-view style="margin-top:80px"/>
+        </b-container>
     </div>
 </template>
 
@@ -16,7 +25,7 @@ import {mapState} from "vuex";
 
 @Component({
     computed: {
-         ...mapState({
+        ...mapState({
             activeDiscipline: "activeDiscipline",
             activeLab: "activeLab",
         })
@@ -29,19 +38,17 @@ export default class App extends Vue {
     get breadcrumbs() {
         let result = []
 
-        console.log(this.$route.name)
-
-        if (this.$route.name == "Labs" || this.$route.name == "Tasks") {
+        if (this.$route.name == "DisciplinePage" || this.$route.name == "LabPage") {
             result.push({
                 "to": `/`,
                 "title": this.activeDiscipline.title,
             })
         }
 
-        if (this.$route.name == "Tasks") {
+        if (this.$route.name == "LabPage") {
             result.push({
                 "to": `/discipline/${this.activeDiscipline.id}`,
-                "title": this.activeLab.title,
+                "title": `<i class="${this.activeLab.icon}"></i> ${this.activeLab.title}`,
             })
         }
 
@@ -50,6 +57,10 @@ export default class App extends Vue {
 }
 </script>
 
-<style>
-
+<style lang="scss">
+#app {
+    .breadcrumb {
+        margin-bottom: 0;
+    }
+}
 </style>

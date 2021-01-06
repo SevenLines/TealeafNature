@@ -34,15 +34,15 @@ export default new Vuex.Store({
     },
     actions: {
         async fetchDisciplines({commit}) {
-            let r = await Discipline.findAll();
+            let r = await Discipline.findAll({order: [["title", "DESC"]]});
             commit("setDisciplines", r)
         },
         async fetchLabs({commit, state}) {
-            let r = await (state.activeDiscipline as any).getLabs();
+            let r = await (state.activeDiscipline as any).getLabs({order: ["order"]});
             commit("setLabs", r)
         },
         async fetchTasks({commit, state}) {
-            let r = await (state.activeLab as any).getTasks();
+            let r = await (state.activeLab as any).getTasks({order: ["group_id", "order"]});
             commit("setTasks", r)
         },
         async setActiveDisciplineId({commit, state, dispatch}, disciplineId) {

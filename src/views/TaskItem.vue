@@ -1,34 +1,62 @@
 <template>
-    <div>
-        <div v-for="t in tasks" :key="t.id">
-            {{t.content}}
+    <div class="task" :class="klass" :style="style">
+        <div class="task-rendered-content" v-html="contentRendered"></div>
+        <div class="d-flex justify-content-between">
+            <b-button-group>
+            <b-button size="sm" variant="info" @click="$emit('edit')">Редактировать</b-button>
+            <b-button size="sm" variant="warning" @click="$emit('tip')">Подсказка</b-button>
+                </b-button-group>
+            <b-button  size="sm" variant="danger" @click="$emit('remove')">Удалить</b-button>
         </div>
     </div>
 </template>
 
-<script lang="ts">
-
-import {Vue, Watch} from "vue-property-decorator";
-import {mapState} from "vuex";
+<script>
+import {Prop, Vue} from "vue-property-decorator";
 import Component from "vue-class-component";
+import {ComplexityTypes} from "@/consts";
+import marked from 'marked';
 
 @Component({
-    computed: {
-        ...mapState({
-            tasks: "tasks",
-            activeDiscipline: "activeDiscipline",
-            activeLab: "activeLab",
-        })
-    }
 })
-export default class Tasks extends Vue {
-    @Watch("$route", {deep: true, immediate: true})
-    onRouteChange() {
-        this.$store.dispatch("setActiveLabId", this.$route.params.labId)
+export default class TaskItem extends Vue{
+    @Prop() activeTask;
+    @Prop() task;
+
+    get contentRendered() {
+        let text  = marked(this.task.content);
+        return text
+    }
+
+    get klass() {
+        let klass = ""
+        switch (this.task.complexity) {
+            case ComplexityTypes.undefined:
+                klass = "task undefined";
+                break;
+            case ComplexityTypes.easy:
+                klass = "task easy";
+                break;
+            case ComplexityTypes.medium:
+                klass = "task medium";
+                break;
+            case ComplexityTypes.hard:
+                klass = "task hard";
+                break;
+            case ComplexityTypes.nightmare:
+                klass = "task nightmare";
+                break;
+        }
+        return klass
+    }
+
+    get style() {
+        return {
+            opacity: this.activeTask == null || this.activeTask === this.task ? "100%" : "50%"
+        }
     }
 }
 </script>
-
 
 <style lang="scss">
     @import "../consts";
@@ -112,6 +140,11 @@ export default class Tasks extends Vue {
     }
 
     .task {
+        transition: all 0.1s;
+        padding: 1em;
+        img {
+            max-width: 100%;
+        }
         .task-rendered-content {
             p, pre {
                 margin-bottom: 0.5em;

@@ -18,4 +18,16 @@ export const Task = db.define("Task", {
     timestamps: false
 })
 
+export interface ITask {
+    title: string,
+    complexity: number,
+    content: string,
+    additional_content: string,
+    order: number,
+    tags: string,
+    visible: boolean,
+    group_id: number,
+    custom_class: string,
+}
+
 export default Task

@@ -25,4 +25,9 @@ Discipline.hasMany(Lab, {
 })
 Lab.belongsTo(Discipline, )
 
+export interface IDiscipline {
+    title: string
+    jekyll_folder: string
+}
+
 export default Discipline
