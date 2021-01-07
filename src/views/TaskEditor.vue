@@ -52,6 +52,7 @@ export default class TaskEditor extends Vue {
         complexity: null,
         additional_content: "",
         visible: null,
+        lab_id: null,
     };
 
     previewRenderFuncProxy (text: string) {
@@ -74,6 +75,7 @@ export default class TaskEditor extends Vue {
             complexity: this.task ? this.task.complexity : null,
             additional_content: this.task ? this.task.additional_content : "",
             visible: this.task ? this.task.visible : null,
+            lab_id: this.task ? this.task.lab_id : null,
         }
     }
 

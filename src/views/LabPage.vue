@@ -60,6 +60,7 @@ import _ from 'lodash';
 })
 export default class LabPage extends Vue {
     public activeTask: any = null;
+    public activeLab!: any;
     public taskGroups!: any;
     public activeTaskGroup = -1;
 
@@ -85,7 +86,7 @@ export default class LabPage extends Vue {
                 value: x.id,
                 text: x.title,
             }
-        })]
+        }), {value: -2, text: "Добавить"}]
     }
 
     onEdit(task) {
@@ -149,7 +150,7 @@ export default class LabPage extends Vue {
     async onAddTaskClick() {
         let task = Task.build({
             title: "",
-            order: _(this.tasks).map(x => x.order).max() + 1,
+            order: (_(this.tasks).map(x => x.order).max() + 1) || 0,
             custom_class: "",
             content: "",
             complexity: ComplexityTypes.easy,
