@@ -99,5 +99,13 @@ export default new Vuex.Store({
             }
             await dispatch("fetchTasks")
         },
+        async updateLabsOrder({commit, state, dispatch}, labs) {
+            for (const t of labs) {
+                let index = labs.indexOf(t);
+                t.order = index + 1
+                await t.save()
+            }
+            await dispatch("fetchLabs")
+        },
     },
 })

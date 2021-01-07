@@ -1,10 +1,26 @@
 <template>
     <div class="container mt-4">
-        <div v-for="d in disciplines" :key="d.id">
+        <h2>Дисциплины
+            <button v-b-modal.disciplineEditModel class="btn btn-sm btn-primary">
+                <i class="fas fa-plus"></i></button>
+        </h2>
+        <div class="d-flex align-items-center justify-content-between border-bottom p-1 pl-0" v-for="d in disciplines" :key="d.id">
             <router-link :to="`/discipline/${d.id}`">
-                {{d.title}}
+                {{ d.title }}
             </router-link>
+            <b-button class="ml-2" size="sm" variant="outline-danger" @click="onRemove(d)">
+                <i class="fad fa-trash"></i>
+            </b-button>
         </div>
+
+        <b-modal size="lg" id="disciplineEditModel" title="Добавить новую дисциплину" @ok="onDisciplineSaveClick">
+            <b-form-group label="Название">
+                <b-input v-model="newDisciplineTitle"></b-input>
+            </b-form-group>
+            <b-form-group label="Папка jekyll">
+                <b-input v-model="newDisciplineJekyllFolder"></b-input>
+            </b-form-group>
+        </b-modal>
     </div>
 </template>
 
@@ -13,6 +29,7 @@
 import {Vue, Watch} from "vue-property-decorator";
 import {mapActions, mapState} from "vuex";
 import Component from "vue-class-component";
+import Discipline from "../models/Discipline";
 
 @Component({
     computed: {
@@ -30,8 +47,40 @@ import Component from "vue-class-component";
 
 })
 export default class Dashboard extends Vue {
+    newDisciplineTitle: string = "";
+    newDisciplineJekyllFolder: string = "";
+
     created() {
         this.$store.dispatch("fetchDisciplines")
+    }
+
+    async onDisciplineSaveClick () {
+        let discipline = Discipline.build({
+            title: this.newDisciplineTitle,
+            jekyll_folder: this.newDisciplineJekyllFolder,
+        })
+        await discipline.save();
+        this.$store.dispatch("fetchDisciplines")
+        this.$router.push({ name: 'DisciplinePage', params: { disciplineId: discipline.id } })
+    }
+
+    async onRemove(discipline) {
+        let doDelete = await this.$bvModal.msgBoxConfirm(
+            `Точно удалить дисциплину ${discipline.title}?`, {
+                title: 'Подтвердите',
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'Удалить',
+                cancelTitle: 'НЕЕЕЕТ!!!',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+        if (doDelete) {
+            await discipline.destroy();
+            await this.$store.dispatch("fetchDisciplines")
+        }
     }
 }
 </script>

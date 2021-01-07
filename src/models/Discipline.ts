@@ -15,7 +15,8 @@ export const Discipline = db.define("Discipline", {
     },
 }, {
     tableName: "lessons_discipline",
-    timestamps: false
+    createdAt: false,
+    updatedAt: "modified_at"
 });
 
 Discipline.hasMany(Lab, {

@@ -14,23 +14,31 @@
         <div class="row">
             <div class="col">
                 <h2>Лабы
-                <button v-b-modal.labEditModel  class="btn btn-sm btn-primary" @click="onLabAddClick"><i class="fas fa-plus"></i></button>
+                    <button v-b-modal.labEditModel class="btn btn-sm btn-primary" @click="onLabAddClick"><i
+                        class="fas fa-plus"></i></button>
                 </h2>
-                <div class="d-flex align-items-center" v-for="l in labs" :key="l.id">
-                    <a href="#" @click="setActiveLabId(l.id)">
-                        <router-link :to="`/lab/${l.id}`">
-                            <i :class="l.icon"></i> {{ l.title }}
-                        </router-link>
-                    </a>
-                    <b-button v-b-modal.labEditModel class="ml-2" size="sm" variant="link" @click="onLabEditClick(l)">
-                        <i class="fad fa-edit"></i>
-                    </b-button>
-                    <b-button class="ml-2" size="sm" variant="link" @click="onRemove(l)">
-                        <i class="fad fa-trash"></i>
-                    </b-button>
-                </div>
+                <draggable v-model="labs" group="people" @start="drag=true" @end="drag=false">
+                    <div class="d-flex align-items-center justify-content-between border-bottom p-1 pl-0" v-for="l in labs" :key="l.id">
+                        <div>
+                            <a href="#" @click="setActiveLabId(l.id)">
+                                <router-link :to="`/lab/${l.id}`">
+                                    <i :class="l.icon"></i> {{ l.title }}
+                                </router-link>
+                            </a>
+                        </div>
+                        <div>
+                            <b-button v-b-modal.labEditModel class="ml-2" size="sm" variant="outline-info"
+                                      @click="onLabEditClick(l)">
+                                <i class="fad fa-edit"></i>
+                            </b-button>
+                            <b-button class="ml-2" size="sm" variant="outline-danger" @click="onRemove(l)">
+                                <i class="fad fa-trash"></i>
+                            </b-button>
+                        </div>
+                    </div>
+                </draggable>
             </div>
-            <div class="col">
+            <div class="col ml-4">
                 <h2>Статьи
                     <button class="btn btn-sm btn-warning"><i class="fas fa-plus"></i></button>
                 </h2>
@@ -51,7 +59,14 @@
                 </b-col>
                 <b-col>
                     <b-form-group label="Иконка">
-                        <b-input v-model="labToEditForm.icon"/>
+                        <b-input-group>
+                            <b-input v-model="labToEditForm.icon"/>
+                            <b-input-group-append>
+                                <b-button variant="info">
+                                    <i :class="labToEditForm.icon"></i>
+                                </b-button>
+                            </b-input-group-append>
+                        </b-input-group>
                     </b-form-group>
                 </b-col>
             </b-form-row>
@@ -84,7 +99,6 @@
                                          :preview-render-func="previewRenderFuncProxy"
                                          :upload-func="uploadFileFuncProxy"
                         />
-
                     </b-form-group>
                 </b-col>
                 <b-col>
@@ -111,15 +125,16 @@ import {IDiscipline} from "../models/Discipline";
 import MarkdownEditor from "./MarkdownEditor.vue";
 import Lab, {ILab} from "../models/Lab";
 import {previewRenderFunc, uploadFileFunc} from "../utils";
+import draggable from 'vuedraggable'
 import _ from "lodash";
 
 @Component({
     components: {
-        MarkdownEditor
+        MarkdownEditor,
+        draggable
     },
     computed: {
         ...mapState({
-            labs: "labs",
             activeDiscipline: "activeDiscipline",
         }),
         ...mapGetters({
@@ -134,7 +149,6 @@ import _ from "lodash";
 })
 export default class DisciplinePage extends Vue {
     private activeDiscipline!: any;
-    private labs!: any;
     labToChange: any;
     labToEditForm: ILab = {
         alias: "",
@@ -151,6 +165,15 @@ export default class DisciplinePage extends Vue {
         jekyll_folder: "",
         title: ""
     };
+
+    get labs() {
+        return this.$store.state.labs;
+    }
+
+    set labs(labs) {
+        this.$store.commit("setLabs", labs)
+        this.$store.dispatch("updateLabsOrder", labs)
+    }
 
     previewRenderFuncProxy(text: string) {
         return previewRenderFunc(text, this.$store.state.activeDiscipline.jekyll_folder)
@@ -204,7 +227,7 @@ export default class DisciplinePage extends Vue {
         this.labToChange = Lab.build({
             alias: "",
             title: "Новая",
-            order: _(this.labs).map(x => x.order).max() + 1,
+            order: (_(this.labs).map(x => x.order).max() + 1) || 0,
             icon: "",
             type: 0,
             content: "",
