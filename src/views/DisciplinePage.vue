@@ -5,7 +5,12 @@
             </b-input>
         </b-form-group>
         <b-form-group label="Путь к папке jekyll">
-            <b-input v-model="form.jekyll_folder"></b-input>
+            <b-input-group>
+                <b-input v-model="form.jekyll_folder"></b-input>
+                <b-input-group-addon>
+                    <b-button variant="info" size="sm" @click="onJekyllFolderSelect">...</b-button>
+                </b-input-group-addon>
+            </b-input-group>
         </b-form-group>
         <b-button variant="info" @click="onSaveClick" :disabled="!isSaveEnabled">
             Сохранить
@@ -18,7 +23,8 @@
                         class="fas fa-plus"></i></button>
                 </h2>
                 <draggable v-model="labs" group="people" @start="drag=true" @end="drag=false">
-                    <div class="d-flex align-items-center justify-content-between border-bottom p-1 pl-0" v-for="l in labs" :key="l.id">
+                    <div class="d-flex align-items-center justify-content-between border-bottom p-1 pl-0"
+                         v-for="l in labs" :key="l.id">
                         <div>
                             <a href="#" @click="setActiveLabId(l.id)">
                                 <router-link :to="`/lab/${l.id}`">
@@ -128,6 +134,9 @@ import {previewRenderFunc, uploadFileFunc} from "../utils";
 import draggable from 'vuedraggable'
 import _ from "lodash";
 
+const {dialog} = require('electron').remote
+
+
 @Component({
     components: {
         MarkdownEditor,
@@ -183,7 +192,7 @@ export default class DisciplinePage extends Vue {
         return uploadFileFunc(file, this.$store.state.activeDiscipline.jekyll_folder)
     }
 
-    @Watch("activeDiscipline")
+    @Watch("activeDiscipline", {deep: true})
     onActiveDisciplineChange() {
         this.form.title = this.activeDiscipline.title;
         this.form.jekyll_folder = this.activeDiscipline.jekyll_folder;
@@ -275,6 +284,17 @@ export default class DisciplinePage extends Vue {
         if (doDelete) {
             await lab.destroy();
             await this.$store.dispatch("fetchLabs")
+        }
+    }
+
+    async onJekyllFolderSelect() {
+        let result = dialog.showOpenDialogSync({
+            defaultPath: this.activeDiscipline.jekyll_folder,
+            properties: ['openDirectory']
+        })
+        if (result) {
+            this.activeDiscipline.jekyll_folder = result[0];
+            await this.activeDiscipline.save()
         }
     }
 

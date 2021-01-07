@@ -46,7 +46,7 @@ export default new Vuex.Store({
                 if (jekyll_folder) {
                     let dir = path.join(jekyll_folder, "common")
                     if (fs.existsSync(dir)) {
-                        files = fs.readdirSync(dir);
+                        files = fs.readdirSync(dir).filter(x => x.endsWith(".md"));
                     }
                 }
             }
