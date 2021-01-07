@@ -14,6 +14,7 @@ export default new Vuex.Store({
         disciplines: [],
         labs: [],
         tasks: [],
+        taskGroups: [],
         activeDiscipline: {},
         activeLab: {},
     },
@@ -26,6 +27,9 @@ export default new Vuex.Store({
         },
         setTasks(state, tasks) {
             state.tasks = tasks;
+        },
+        setTaskGroups(state, tasks) {
+            state.taskGroups = tasks;
         },
         setActiveDiscipline(state, discipline) {
             state.activeDiscipline = discipline;
@@ -59,20 +63,33 @@ export default new Vuex.Store({
             commit("setLabs", r)
         },
         async fetchTasks({commit, state}) {
-            let r = await (state.activeLab as any).getTasks({order: ["order"]});
+            let r = await (state.activeLab as any).getTasks({order: ["group_id", "order"]});
             commit("setTasks", r)
         },
+        async fetchTaskGroups({commit, state}) {
+            let r = await (state.activeLab as any).getTaskGroups({order: ["order"]});
+            commit("setTaskGroups", r)
+        },
         async setActiveDisciplineId({commit, state, dispatch}, disciplineId) {
+            commit("setLabs", [])
+            commit("setTasks", [])
+            commit("setTaskGroups", [])
+
             let discipline = await Discipline.findOne({where: {id: disciplineId}})
             commit("setActiveDiscipline", discipline)
             dispatch("fetchLabs")
         },
         async setActiveLabId({commit, state, dispatch}, labId) {
+            commit("setLabs", [])
+            commit("setTasks", [])
+            commit("setTaskGroups", [])
+
             let lab = await Lab.findOne({where: {id: labId}, include: Discipline})
             let discipline = await (lab as any).getDiscipline();
-            dispatch("setActiveDisciplineId", discipline.id)
+            await dispatch("setActiveDisciplineId", discipline.id)
             commit("setActiveLab", lab)
-            dispatch("fetchTasks")
+            await dispatch("fetchTasks")
+            await dispatch("fetchTaskGroups")
         },
         async updateTasksOrder({commit, state, dispatch}, tasks) {
             for (const t of tasks) {

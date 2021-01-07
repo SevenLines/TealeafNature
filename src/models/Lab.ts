@@ -2,6 +2,7 @@ import {db} from "../db";
 import {DataTypes} from "sequelize";
 import Discipline from "./Discipline";
 import {Task} from "./Task";
+import TaskGroup from "./TaskGroup";
 
 export const Lab = db.define("Lab", {
     alias: DataTypes.STRING,
@@ -18,11 +19,18 @@ export const Lab = db.define("Lab", {
     tableName: "lessons_lab",
     timestamps: false
 })
+
 Lab.hasMany(Task, {
     foreignKey: {
         field: "lab_id"
     }
 })
+Lab.hasMany(TaskGroup, {
+    foreignKey: {
+        field: "lab_id"
+    }
+})
 Task.belongsTo(Lab)
+TaskGroup.belongsTo(Lab)
 
 export default Lab

@@ -3,7 +3,9 @@
         <div class="d-flex flex-column w-100">
             <div class="p-2" style="background-color: #f1f1f1; border-top: 2px solid #e7e7e7">
                 <b-container class="pr-4 d-flex justify-content-end">
-                    <b-button size="sm" variant="info" @click="onAddTaskClick">Добавить</b-button>
+                    <b-select size="sm" :options="taskGroupsOptions" v-model="activeTaskGroup"></b-select>
+                    <b-button class="ml-2" size="sm" variant="info" @click="onAddTaskClick">Скопировать</b-button>
+                    <b-button class="ml-2" size="sm" variant="info" @click="onAddTaskClick">Добавить</b-button>
                 </b-container>
             </div>
             <div class="flex-grow-1 overflow-auto p-2">
@@ -52,11 +54,14 @@ import _ from 'lodash';
         ...mapState({
             activeDiscipline: "activeDiscipline",
             activeLab: "activeLab",
+            taskGroups: "taskGroups",
         }),
     }
 })
 export default class LabPage extends Vue {
     public activeTask: any = null;
+    public taskGroups!: any;
+    public activeTaskGroup = -1;
 
     @Watch("$route", {deep: true, immediate: true})
     onRouteChange() {
@@ -64,12 +69,23 @@ export default class LabPage extends Vue {
     }
 
     get tasks() {
-        return this.$store.state.tasks;
+        return this.$store.state.tasks.filter(x => {
+            return this.activeTaskGroup == -1 || x.group_id == this.activeTaskGroup
+        });
     }
 
     set tasks(tasks) {
         this.$store.commit("setTasks", tasks)
         this.$store.dispatch("updateTasksOrder", tasks)
+    }
+
+    get taskGroupsOptions()  {
+        return [{value: -1, text: "Все"}, ...this.taskGroups.map(x => {
+            return {
+                value: x.id,
+                text: x.title,
+            }
+        })]
     }
 
     onEdit(task) {
