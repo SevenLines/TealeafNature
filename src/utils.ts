@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 import {Buffer} from "buffer";
 import marked from "marked";
+import _ from 'lodash'
 
 export async function uploadFileFunc(file: File, jekyll_folder) {
     let assets_folder = path.join('assets', "tasks");
@@ -30,4 +31,8 @@ export function previewRenderFunc(text: string, jekyll_folder) {
     text = text.replace(/(!\[.*?\]\()(\/assets.*?)(\))/g, `$1${dir}$2$3`)
     text = marked(text)
     return text;
+}
+
+export default function setDefault(obj, prop, deflt) {
+  return _.has(obj, prop) ? obj[prop] : (obj[prop] = deflt);
 }

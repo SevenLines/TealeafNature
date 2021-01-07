@@ -61,7 +61,7 @@ export default class Dashboard extends Vue {
         })
         await discipline.save();
         this.$store.dispatch("fetchDisciplines")
-        this.$router.push({ name: 'DisciplinePage', params: { disciplineId: discipline.id } })
+        this.$router.push({ name: 'DisciplinePage', params: { disciplineId: discipline.id.toString() } })
     }
 
     async onRemove(discipline) {

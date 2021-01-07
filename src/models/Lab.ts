@@ -1,10 +1,27 @@
-import {db} from "../db";
-import {DataTypes} from "sequelize";
+const {DataTypes} = require('sequelize');
+import {db} from '../db';
+import {Model} from "sequelize";
 import Discipline from "./Discipline";
 import {Task} from "./Task";
 import TaskGroup from "./TaskGroup";
 
-export const Lab = db.define("Lab", {
+export class Lab extends Model {
+    alias: string;
+    title: string;
+    order: number;
+    icon: string;
+    group_id: number;
+    type: number;
+    content: string;
+    content_additional: string;
+    remark: string;
+    modified_at: Date;
+    discipline_id: number;
+
+    getTasks;
+}
+
+Lab.init({
     alias: DataTypes.STRING,
     title: DataTypes.STRING,
     order: DataTypes.NUMBER,
@@ -17,6 +34,8 @@ export const Lab = db.define("Lab", {
     modified_at: DataTypes.DATE,
     discipline_id: DataTypes.NUMBER,
 }, {
+    sequelize: db,
+    modelName: "Lab",
     tableName: "lessons_lab",
     createdAt: false,
     updatedAt: "modified_at"
@@ -35,7 +54,7 @@ Lab.hasMany(TaskGroup, {
 Task.belongsTo(Lab)
 TaskGroup.belongsTo(Lab)
 
-export interface  ILab {
+export interface ILab {
     alias: string;
     title: string;
     order: number;

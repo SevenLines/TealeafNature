@@ -15,6 +15,9 @@
         <b-button variant="info" @click="onSaveClick" :disabled="!isSaveEnabled">
             Сохранить
         </b-button>
+         <b-button class="ml-2" variant="success" @click="onGenerateClick">
+            Сгенерировать
+        </b-button>
         <hr>
         <div class="row">
             <div class="col">
@@ -127,7 +130,7 @@
 import {Vue, Watch} from "vue-property-decorator";
 import {mapActions, mapGetters, mapState} from "vuex";
 import Component from "vue-class-component";
-import {IDiscipline} from "../models/Discipline";
+import Discipline, {IDiscipline} from "../models/Discipline";
 import MarkdownEditor from "./MarkdownEditor.vue";
 import Lab, {ILab} from "../models/Lab";
 import {previewRenderFunc, uploadFileFunc} from "../utils";
@@ -157,7 +160,7 @@ const {dialog} = require('electron').remote
     }
 })
 export default class DisciplinePage extends Vue {
-    private activeDiscipline!: any;
+    private activeDiscipline!: Discipline;
     labToChange: any;
     labToEditForm: ILab = {
         alias: "",
@@ -296,6 +299,10 @@ export default class DisciplinePage extends Vue {
             this.activeDiscipline.jekyll_folder = result[0];
             await this.activeDiscipline.save()
         }
+    }
+
+    async onGenerateClick() {
+        await this.activeDiscipline.generateLabsYaml()
     }
 
 }

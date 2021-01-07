@@ -1,9 +1,22 @@
-import {db} from "../db";
 import Lab from "./Lab";
 const {DataTypes} = require('sequelize');
+import {db} from '../db';
+import {Model} from "sequelize";
 
+export class Task extends Model {
+    title: string;
+    complexity: number;
+    content: string;
+    additional_content: string;
+    order: number;
+    tags: string;
+    visible: boolean;
+    group_id: number;
+    lab_id: number;
+    custom_class: string;
+}
 
-export const Task = db.define("Task", {
+Task.init({
     title: DataTypes.STRING,
     complexity: DataTypes.NUMBER,
     content: DataTypes.STRING,
@@ -15,6 +28,8 @@ export const Task = db.define("Task", {
     lab_id: DataTypes.NUMBER,
     custom_class: DataTypes.STRING,
 }, {
+    sequelize: db,
+    modelName: "Task",
     tableName: "lessons_task",
     timestamps: false
 })
