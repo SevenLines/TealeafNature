@@ -6,6 +6,10 @@ import * as fs from "fs";
 import _ from 'lodash';
 import path from "path";
 
+const child_process = require('child_process');
+const kill  = require('tree-kill');
+
+
 Vue.use(Vuex)
 
 
@@ -17,6 +21,7 @@ export default new Vuex.Store({
         taskGroups: [],
         activeDiscipline: {},
         activeLab: {},
+        jekyllProcess: null,
     },
     mutations: {
         setDisciplines(state, disciplines) {
@@ -37,6 +42,18 @@ export default new Vuex.Store({
         setActiveLab(state, lab) {
             state.activeLab = lab;
         },
+        runJekyllProcess(state) {
+            if (state.jekyllProcess) {
+                kill(this.state.jekyllProcess.pid)
+                this.state.jekyllProcess = null
+            }
+            if (state.activeDiscipline) {
+                state.jekyllProcess = child_process.spawn('serve.cmd', {
+                    detached: true,
+                    cwd: (state.activeDiscipline as Discipline).jekyll_folder,
+                });
+            }
+        }
     },
     getters: {
         activeDisciplineArticles({activeDiscipline}) {

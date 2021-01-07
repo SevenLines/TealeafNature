@@ -15,8 +15,11 @@
         <b-button variant="info" @click="onSaveClick" :disabled="!isSaveEnabled">
             Сохранить
         </b-button>
-         <b-button class="ml-2" variant="success" @click="onGenerateClick">
+        <b-button class="ml-2" variant="success" @click="onGenerateClick">
             Сгенерировать
+        </b-button>
+        <b-button class="ml-2" variant="success" @click="onRunProcessClick">
+            Запустить
         </b-button>
         <hr>
         <div class="row">
@@ -303,6 +306,10 @@ export default class DisciplinePage extends Vue {
 
     async onGenerateClick() {
         await this.activeDiscipline.generateLabsYaml()
+    }
+
+    onRunProcessClick () {
+        this.$store.commit("runJekyllProcess")
     }
 
 }
