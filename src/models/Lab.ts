@@ -6,6 +6,7 @@ import {Task} from "./Task";
 import TaskGroup from "./TaskGroup";
 
 export class Lab extends Model {
+    id: number;
     alias: string;
     title: string;
     order: number;

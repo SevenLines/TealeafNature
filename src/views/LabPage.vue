@@ -4,7 +4,7 @@
             <div class="p-2" style="background-color: #f1f1f1; border-top: 2px solid #e7e7e7">
                 <b-container class="pr-4 d-flex justify-content-end">
                     <b-select size="sm" :options="taskGroupsOptions" v-model="activeTaskGroup"></b-select>
-                    <b-button class="ml-2" size="sm" variant="info" @click="onAddTaskClick">Скопировать</b-button>
+                    <b-button class="ml-2" size="sm" variant="info" @click="onCopyTasksClick">Скопировать</b-button>
                     <b-button class="ml-2" size="sm" variant="info" @click="onAddTaskClick">Добавить</b-button>
                 </b-container>
             </div>
@@ -32,7 +32,9 @@
                 @save="onSaveTaskClick"
             >
             </task-editor>
+
         </div>
+        <copy-tasks-modal ref="copyTasksModal" />
     </div>
 </template>
 
@@ -47,9 +49,11 @@ import TaskEditor from "./TaskEditor.vue";
 import Task, {ITask} from "../models/Task";
 import {ComplexityTypes} from "../consts";
 import _ from 'lodash';
+import Discipline from "../models/Discipline";
+import CopyTasksModal from "./CopyTasksModal.vue";
 
 @Component({
-    components: {TaskEditor, TaskItem, draggable},
+    components: {CopyTasksModal, TaskEditor, TaskItem, draggable},
     computed: {
         ...mapState({
             activeDiscipline: "activeDiscipline",
@@ -121,7 +125,7 @@ export default class LabPage extends Vue {
         }
     }
 
-    async onSaveTaskClick(task_form: ITask) {
+    async onSaveTaskClick(task_form: ITask, buttonClicked) {
         this.activeTask.title = task_form.title;
         this.activeTask.order = task_form.order;
         this.activeTask.custom_class = task_form.custom_class;
@@ -141,7 +145,7 @@ export default class LabPage extends Vue {
             text: 'Successfully task saved!'
         });
 
-        if (isNew) {
+        if (isNew || buttonClicked) {
             this.activeTask = null;
             await this.$store.dispatch("fetchTasks")
         }
@@ -159,6 +163,10 @@ export default class LabPage extends Vue {
             lab_id: this.activeLab.id,
         })
         this.activeTask = task;
+    }
+
+    async onCopyTasksClick () {
+        (this.$refs.copyTasksModal as any).show()
     }
 }
 </script>

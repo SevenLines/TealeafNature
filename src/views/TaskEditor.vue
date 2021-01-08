@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="d-flex justify-content-between mb-4">
-            <b-button size="sm" class="mr-2" variant="danger" @click="onSaveClick">Сохранить</b-button>
+            <b-button size="sm" class="mr-2" variant="danger" @click="onSaveClick(true);">Сохранить</b-button>
             <difficult-selector v-model="form.complexity"></difficult-selector>
             <b-button size="sm" variant="info" @click="$emit('cancel')">Отменить</b-button>
         </div>
@@ -84,8 +84,8 @@ export default class TaskEditor extends Vue {
         }
     }
 
-    onSaveClick() {
-        this.$emit("save", this.form)
+    onSaveClick(buttonClicked) {
+        this.$emit("save", this.form, buttonClicked)
     }
 
     mounted() {
@@ -99,7 +99,7 @@ export default class TaskEditor extends Vue {
     onKey(e: any) {
         if (e.ctrlKey && (e.which == 83)) {
             e.preventDefault();
-            this.onSaveClick()
+            this.onSaveClick(false)
         }
     }
 }

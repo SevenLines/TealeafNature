@@ -17,7 +17,7 @@
                 <router-view/>
             </div>
         </div>
-        <notifications group="messages" />
+        <notifications group="messages"/>
     </div>
 </template>
 
@@ -41,21 +41,21 @@ export default class App extends Vue {
     get breadcrumbs() {
         let result = []
 
-        if (this.$route.name == "DisciplinePage" || this.$route.name == "LabPage"  || this.$route.name == "ArticleEditor") {
-             result.push({
+        if (this.$route.name == "DisciplinePage" || this.$route.name == "LabPage" || this.$route.name == "ArticleEditor") {
+            result.push({
                 "to": `/discipline/${this.activeDiscipline.id}`,
                 "title": this.activeDiscipline.title,
             })
         }
 
-        if (this.$route.name == "LabPage" ) {
+        if (this.$route.name == "LabPage") {
             result.push({
                 "to": `/lab/${this.activeLab.id}`,
                 "title": `<i class="${this.activeLab.icon}"></i> ${this.activeLab.title}`,
             })
         }
 
-        if (this.$route.name == "ArticleEditor" ) {
+        if (this.$route.name == "ArticleEditor") {
             result.push({
                 "to": `/discipline/${this.activeDiscipline.id}/article/${this.$route.params.article}`,
                 "title": `<i class="fas fa-file-code"></i> ${this.$route.params.article}`,

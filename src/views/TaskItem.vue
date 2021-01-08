@@ -1,7 +1,10 @@
 <template>
-    <div class="task" :class="klass" :style="style">
+    <div class="task position-relative" :class="klass" :style="style" @click="$emit('click')">
+        <div class="position-absolute" v-if="withSelectedCheckBox" style="right: 0.5em; top: 0.5em">
+            <b-checkbox :checked="selected"></b-checkbox>
+        </div>
         <div class="task-rendered-content" v-html="contentRendered"></div>
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between" v-if="withEditBar">
             <div class="d-flex align-items-center">
                 <b-button size="sm" variant="info" @click="$emit('edit')"><i class="fad fa-edit"></i>
                 </b-button>
@@ -31,12 +34,14 @@ import hljs from "highlight.js"
 export default class TaskItem extends Vue {
     @Prop() activeTask;
     @Prop() task;
+    @Prop({default: true}) withEditBar;
+    @Prop({default: false}) withSelectedCheckBox;
+    @Prop({default: false}) selected;
 
     @Watch("contentRendered", {
         immediate: true
     })
     onContentRenderedChanged() {
-        console.log("change")
         this.$nextTick(() => {
                 this.$el.querySelectorAll("pre").forEach(block => {
                 hljs.highlightBlock(block);
@@ -69,6 +74,11 @@ export default class TaskItem extends Vue {
                 klass = "task nightmare";
                 break;
         }
+
+        if (this.withSelectedCheckBox && !this.selected) {
+            klass += " is-not-visible ";
+        }
+
         return klass
     }
 
