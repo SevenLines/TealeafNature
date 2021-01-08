@@ -1,6 +1,7 @@
 <template>
     <b-modal ref="modal" title="Скопировать задачи"
              @show="onShow"
+             @ok="onOkClick"
              size="lg"
     >
         <b-form-group>
@@ -91,6 +92,7 @@ export default class CopyTasksModal extends Vue {
     }
 
     show() {
+        this.tasksToCopy = [];
         (this.$refs.modal as any).show();
     }
 
@@ -100,6 +102,10 @@ export default class CopyTasksModal extends Vue {
         } else {
             this.tasksToCopy = [...this.tasksToCopy, task]
         }
+    }
+
+    onOkClick() {
+        this.$emit("ok", this.tasksToCopy)
     }
 }
 </script>

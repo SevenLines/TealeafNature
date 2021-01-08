@@ -157,9 +157,9 @@
 import {Vue, Watch} from "vue-property-decorator";
 import {mapActions, mapGetters, mapState} from "vuex";
 import Component from "vue-class-component";
-import Discipline, {IDiscipline} from "../models/Discipline";
+import Discipline from "../models/Discipline";
 import MarkdownEditor from "./MarkdownEditor.vue";
-import Lab, {ILab} from "../models/Lab";
+import Lab from "../models/Lab";
 import {previewRenderFunc, uploadFileFunc} from "../utils";
 import draggable from 'vuedraggable'
 import _ from "lodash";
@@ -189,7 +189,7 @@ const {dialog} = require('electron').remote
 export default class DisciplinePage extends Vue {
     private activeDiscipline!: Discipline;
     labToChange: any;
-    labToEditForm: ILab = {
+    labToEditForm: any = {
         alias: "",
         title: "",
         order: 0,
@@ -198,9 +198,10 @@ export default class DisciplinePage extends Vue {
         content: "",
         content_additional: "",
         remark: "",
+        visible: true,
     }
 
-    form: Discipline = {
+    form: any = {
         jekyll_folder: "",
         title: "",
         deploy_command: "",

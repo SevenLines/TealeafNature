@@ -34,7 +34,7 @@
             </task-editor>
 
         </div>
-        <copy-tasks-modal ref="copyTasksModal" />
+        <copy-tasks-modal ref="copyTasksModal" @ok="onCopyTasksConfirm"/>
     </div>
 </template>
 
@@ -167,6 +167,19 @@ export default class LabPage extends Vue {
 
     async onCopyTasksClick () {
         (this.$refs.copyTasksModal as any).show()
+    }
+
+    async onCopyTasksConfirm (tasks) {
+        for (const t of tasks) {
+            let data = t.get({ plain: true })
+            delete data.id
+            data.lab_id = this.activeLab.id
+            data.LabId = this.activeLab.id
+            data.group_id = this.activeTaskGroup == -1 ? null : this.activeTaskGroup
+            data.TaskGroupId = this.activeTaskGroup == -1 ? null : this.activeTaskGroup
+            await Task.create(data)
+            await this.$store.dispatch("fetchTasks")
+        }
     }
 }
 </script>
