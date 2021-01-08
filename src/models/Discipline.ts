@@ -28,6 +28,10 @@ export class Discipline extends Model {
         let labs = await this.getLabs({order: [["order"], ["title"]]})
 
         for (let lab of labs) {
+            if (!lab.visible) {
+                continue;
+            }
+
             data.order.push(lab.alias)
             data['labs'][lab.alias] = {}
 

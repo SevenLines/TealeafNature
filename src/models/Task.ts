@@ -14,6 +14,8 @@ export class Task extends Model {
     group_id: number;
     lab_id: number;
     custom_class: string;
+
+    getLab;
 }
 
 Task.init({
@@ -31,7 +33,14 @@ Task.init({
     sequelize: db,
     modelName: "Task",
     tableName: "lessons_task",
-    timestamps: false
+    timestamps: false,
+    hooks: {
+        async afterSave(instance, options) {
+            let lab: Lab = await instance.getLab();
+            let discipline = await lab.getDiscipline()
+            await discipline.generateLabsYaml()
+        }
+    }
 })
 
 export interface ITask {

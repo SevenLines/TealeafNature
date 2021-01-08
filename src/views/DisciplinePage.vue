@@ -59,6 +59,10 @@
                             </a>
                         </div>
                         <div>
+                            <b-button  class="ml-2" size="sm" variant="outline-info"
+                                      @click="onToggleEye(l)">
+                                <i class="fad" :class="{'fa-eye': l.visible, 'fa-eye-slash': !l.visible}"></i>
+                            </b-button>
                             <b-button v-b-modal.labEditModel class="ml-2" size="sm" variant="outline-info"
                                       @click="onLabEditClick(l)">
                                 <i class="fad fa-edit"></i>
@@ -350,6 +354,11 @@ export default class DisciplinePage extends Vue {
                 centered: true
             })
         this.$store.dispatch("runDeployProcess", !!createGit)
+    }
+
+    async onToggleEye (lab: Lab) {
+        lab.visible = !lab.visible;
+        await lab.save()
     }
 
 }

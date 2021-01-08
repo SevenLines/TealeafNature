@@ -17,8 +17,10 @@ export class Lab extends Model {
     remark: string;
     modified_at: Date;
     discipline_id: number;
+    visible: boolean;
 
     getTasks;
+    getDiscipline;
 }
 
 Lab.init({
@@ -33,12 +35,19 @@ Lab.init({
     remark: DataTypes.STRING,
     modified_at: DataTypes.DATE,
     discipline_id: DataTypes.NUMBER,
+    visible: DataTypes.BOOLEAN,
 }, {
     sequelize: db,
     modelName: "Lab",
     tableName: "lessons_lab",
     createdAt: false,
-    updatedAt: "modified_at"
+    updatedAt: "modified_at",
+    hooks: {
+        async afterSave(instance, options) {
+            let discipline = await instance.getDiscipline()
+            await discipline.generateLabsYaml()
+        }
+    }
 })
 
 Lab.hasMany(Task, {
@@ -53,16 +62,5 @@ Lab.hasMany(TaskGroup, {
 })
 Task.belongsTo(Lab)
 TaskGroup.belongsTo(Lab)
-
-export interface ILab {
-    alias: string;
-    title: string;
-    order: number;
-    icon: string;
-    type: number;
-    content: string;
-    content_additional: string;
-    remark: string;
-}
 
 export default Lab
