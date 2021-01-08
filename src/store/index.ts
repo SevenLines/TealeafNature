@@ -125,10 +125,27 @@ export default new Vuex.Store({
                 });
             }
         },
-        async runDeployProcess({state}) {
+        async runDeployProcess({state}, with_git) {
             if (state.activeDiscipline) {
+                if (with_git) {
+                    console.log("фиксирую именения в stage")
+                    child_process.execSync(`git add ${(state.activeDiscipline as Discipline).jekyll_folder}`, {
+                        cwd: (state.activeDiscipline as Discipline).jekyll_folder
+                    })
+                    console.log("пытаюсь создать коммит")
+                    try {
+                        child_process.execSync(`git commit -a -m "автоматический коммит из чаинки натуральной"`, {
+                            cwd: (state.activeDiscipline as Discipline).jekyll_folder
+                        })
+                    } catch (e) {
+                        console.error(e)
+                    }
+                    console.log("отправляю на сервер")
+                    child_process.execSync("git push", {
+                        cwd: (state.activeDiscipline as Discipline).jekyll_folder
+                    })
+                }
                 let params = (state.activeDiscipline as Discipline).deploy_command.split(/\s+/)
-                console.log(process.cwd())
                 let ps = child_process.spawn(params[0], params.splice(1), {
                     detached: true,
                     cwd: process.cwd(),

@@ -336,8 +336,20 @@ export default class DisciplinePage extends Vue {
         this.$store.dispatch("runJekyllProcess")
     }
 
-    onDeployClick() {
-        this.$store.dispatch("runDeployProcess")
+    async onDeployClick() {
+        let createGit = await this.$bvModal.msgBoxConfirm(
+            `Создать git коммит?`, {
+                title: 'Подтвердите',
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'Создать коммит',
+                cancelTitle: 'Не надо',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+        this.$store.dispatch("runDeployProcess", !!createGit)
     }
 
 }
