@@ -25,6 +25,11 @@
                 />
             </div>
         </div>
+        <div class="row">
+            <div class="col d-flex align-items-center">
+                <div class="flex-shrink-0 mr-2">Кастомный класс:</div> <b-input v-model="form.custom_class"></b-input>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -55,11 +60,11 @@ export default class TaskEditor extends Vue {
         lab_id: null,
     };
 
-    previewRenderFuncProxy (text: string) {
+    previewRenderFuncProxy(text: string) {
         return previewRenderFunc(text, this.$store.state.activeDiscipline.jekyll_folder)
     }
 
-    uploadFileFuncProxy (file: File) {
+    uploadFileFuncProxy(file: File) {
         return uploadFileFunc(file, this.$store.state.activeDiscipline.jekyll_folder)
     }
 

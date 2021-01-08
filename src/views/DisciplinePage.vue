@@ -1,26 +1,46 @@
 <template>
     <div class="container mt-4">
-        <b-form-group label="Название">
-            <b-input v-model="form.title">
+
+        <div class="row">
+            <div class="col">
+                <b-form-group label="Название">
+                    <b-input v-model="form.title">
+                    </b-input>
+                </b-form-group>
+            </div>
+            <div class="col">
+                <b-form-group label="Путь к папке jekyll">
+                    <b-input-group>
+                        <b-input v-model="form.jekyll_folder"></b-input>
+                        <b-input-group-addon>
+                            <b-button variant="info" size="sm" @click="onJekyllFolderSelect">...</b-button>
+                        </b-input-group-addon>
+                    </b-input-group>
+                </b-form-group>
+            </div>
+        </div>
+        <b-form-group label="Скрипт для деплоя">
+            <b-input v-model="form.deploy_command">
             </b-input>
         </b-form-group>
-        <b-form-group label="Путь к папке jekyll">
-            <b-input-group>
-                <b-input v-model="form.jekyll_folder"></b-input>
-                <b-input-group-addon>
-                    <b-button variant="info" size="sm" @click="onJekyllFolderSelect">...</b-button>
-                </b-input-group-addon>
-            </b-input-group>
-        </b-form-group>
-        <b-button variant="info" @click="onSaveClick" :disabled="!isSaveEnabled">
-            Сохранить
-        </b-button>
-        <b-button class="ml-2" variant="success" @click="onGenerateClick">
-            Сгенерировать
-        </b-button>
-        <b-button class="ml-2" variant="success" @click="onRunProcessClick">
-            Запустить
-        </b-button>
+        <div class="d-flex justify-content-between">
+            <b-button variant="info" @click="onSaveClick" :disabled="!isSaveEnabled">
+                Сохранить
+            </b-button>
+            <div>
+                <b-button-group>
+                    <b-button class="ml-2" variant="warning" @click="onGenerateClick">
+                        Сгенерировать
+                    </b-button>
+                    <b-button class="ml-2" variant="warning" @click="onRunProcessClick">
+                        Запустить
+                    </b-button>
+                </b-button-group>
+                <b-button class="ml-2" variant="danger" @click="onDeployClick">
+                    Задеплоить
+                </b-button>
+            </div>
+        </div>
         <hr>
         <div class="row">
             <div class="col">
@@ -176,9 +196,10 @@ export default class DisciplinePage extends Vue {
         remark: "",
     }
 
-    form: IDiscipline = {
+    form: Discipline = {
         jekyll_folder: "",
-        title: ""
+        title: "",
+        deploy_command: "",
     };
 
     get labs() {
@@ -202,6 +223,7 @@ export default class DisciplinePage extends Vue {
     onActiveDisciplineChange() {
         this.form.title = this.activeDiscipline.title;
         this.form.jekyll_folder = this.activeDiscipline.jekyll_folder;
+        this.form.deploy_command = this.activeDiscipline.deploy_command;
     }
 
     @Watch("$route", {deep: true, immediate: true})
@@ -212,11 +234,13 @@ export default class DisciplinePage extends Vue {
     get isSaveEnabled() {
         return this.activeDiscipline.title != this.form.title
             || this.activeDiscipline.jekyll_folder != this.form.jekyll_folder
+            || this.activeDiscipline.deploy_command != this.form.deploy_command
     }
 
     onSaveClick() {
         this.activeDiscipline.title = this.form.title;
         this.activeDiscipline.jekyll_folder = this.form.jekyll_folder;
+        this.activeDiscipline.deploy_command = this.form.deploy_command;
         this.activeDiscipline.save()
     }
 
@@ -308,8 +332,12 @@ export default class DisciplinePage extends Vue {
         await this.activeDiscipline.generateLabsYaml()
     }
 
-    onRunProcessClick () {
-        this.$store.commit("runJekyllProcess")
+    onRunProcessClick() {
+        this.$store.dispatch("runJekyllProcess")
+    }
+
+    onDeployClick() {
+        this.$store.dispatch("runDeployProcess")
     }
 
 }

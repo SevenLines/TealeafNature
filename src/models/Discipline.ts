@@ -14,6 +14,7 @@ export class Discipline extends Model {
     title: string;
     modified_at: Date;
     jekyll_folder: string;
+    deploy_command: string;
 
     getLabs: Function;
 
@@ -86,6 +87,7 @@ Discipline.init({
     jekyll_folder: {
         type: DataTypes.STRING,
     },
+    deploy_command: DataTypes.STRING,
 }, {
     sequelize: db,
     modelName: "Discipline",
@@ -101,10 +103,5 @@ Discipline.hasMany(Lab, {
 })
 Lab.belongsTo(Discipline)
 
-
-export interface IDiscipline {
-    title: string
-    jekyll_folder: string
-}
 
 export default Discipline

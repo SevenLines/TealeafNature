@@ -7,7 +7,7 @@ import _ from 'lodash';
 import path from "path";
 
 const child_process = require('child_process');
-const kill  = require('tree-kill');
+const kill = require('tree-kill');
 
 
 Vue.use(Vuex)
@@ -42,18 +42,7 @@ export default new Vuex.Store({
         setActiveLab(state, lab) {
             state.activeLab = lab;
         },
-        runJekyllProcess(state) {
-            if (state.jekyllProcess) {
-                kill(this.state.jekyllProcess.pid)
-                this.state.jekyllProcess = null
-            }
-            if (state.activeDiscipline) {
-                state.jekyllProcess = child_process.spawn('serve.cmd', {
-                    detached: true,
-                    cwd: (state.activeDiscipline as Discipline).jekyll_folder,
-                });
-            }
-        }
+
     },
     getters: {
         activeDisciplineArticles({activeDiscipline}) {
@@ -124,5 +113,31 @@ export default new Vuex.Store({
             }
             await dispatch("fetchLabs")
         },
+        async runJekyllProcess({state}) {
+            if (state.jekyllProcess) {
+                kill(this.state.jekyllProcess.pid)
+                this.state.jekyllProcess = null
+            }
+            if (state.activeDiscipline) {
+                state.jekyllProcess = child_process.spawn('serve.cmd', {
+                    detached: true,
+                    cwd: (state.activeDiscipline as Discipline).jekyll_folder,
+                });
+            }
+        },
+        async runDeployProcess({state}) {
+            if (state.activeDiscipline) {
+                let params = (state.activeDiscipline as Discipline).deploy_command.split(/\s+/)
+                console.log(process.cwd())
+                let ps = child_process.spawn(params[0], params.splice(1), {
+                    detached: true,
+                    cwd: process.cwd(),
+                },);
+
+                ps.stderr.on('data', (data) => {
+                    console.error(`ps stderr: ${data}`);
+                });
+            }
+        }
     },
 })
