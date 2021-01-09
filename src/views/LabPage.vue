@@ -4,6 +4,8 @@
             <div class="p-2" style="background-color: #f1f1f1; border-top: 2px solid #e7e7e7">
                 <b-container class="pr-4 d-flex justify-content-end">
                     <b-select size="sm" :options="taskGroupsOptions" v-model="activeTaskGroup"></b-select>
+                    <b-button v-if="activeTaskGroup != -1" class="ml-2 flex-shrink-0" size="sm" variant="danger" @click="onCreateTaskGroup">Удалить группу</b-button>
+                    <b-button class="ml-2 flex-shrink-0" size="sm" variant="info" @click="onCreateTaskGroup">Создать группу</b-button>
                     <b-button class="ml-2" size="sm" variant="info" @click="onCopyTasksClick">Скопировать</b-button>
                     <b-button class="ml-2" size="sm" variant="info" @click="onAddTaskClick">Добавить</b-button>
                 </b-container>
@@ -75,7 +77,7 @@ export default class LabPage extends Vue {
 
     get tasks() {
         return this.$store.state.tasks.filter(x => {
-            return this.activeTaskGroup == -1 || x.group_id == this.activeTaskGroup
+            return (this.activeTaskGroup == -1 && x.group_id == null) || x.group_id == this.activeTaskGroup
         });
     }
 
@@ -85,12 +87,12 @@ export default class LabPage extends Vue {
     }
 
     get taskGroupsOptions()  {
-        return [{value: -1, text: "Все"}, ...this.taskGroups.map(x => {
+        return [{value: -1, text: "без группы"}, ...this.taskGroups.map(x => {
             return {
                 value: x.id,
                 text: x.title,
             }
-        }), {value: -2, text: "Добавить"}]
+        })]
     }
 
     onEdit(task) {
@@ -160,6 +162,7 @@ export default class LabPage extends Vue {
             complexity: ComplexityTypes.easy,
             additional_content: "",
             visible: true,
+            group_id: this.activeTaskGroup == -1 ? null : this.activeTaskGroup,
             lab_id: this.activeLab.id,
         })
         this.activeTask = task;
@@ -180,6 +183,10 @@ export default class LabPage extends Vue {
             await Task.create(data)
             await this.$store.dispatch("fetchTasks")
         }
+    }
+
+    async onCreateTaskGroup() {
+
     }
 }
 </script>

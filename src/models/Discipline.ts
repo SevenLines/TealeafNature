@@ -48,11 +48,12 @@ export class Discipline extends Model {
             let task_groups = {}
             let tasks = await lab.getTasks({order: [["order"], ["id"]]})
             for (let t of tasks) {
+                console.log(t)
                 let task_group = setDefault(task_groups, t.group_id || 0, {
                     'id': t.group_id || 0,
-                    'title': t.group_id ? t.getGroup().title : "default",
+                    'title': t.group_id ? t.getTaskGroup().title : "default",
                     'tasks': [],
-                    'type': t.group_id ? t.getGroup().type : lab.type,
+                    'type': t.group_id ? t.getTaskGroup().type : lab.type,
                 })
                 tasks = task_group['tasks']
 

@@ -16,6 +16,7 @@ export class Task extends Model {
     custom_class: string;
 
     getLab;
+    getTaskGroup;
 }
 
 Task.init({
