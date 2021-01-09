@@ -4,8 +4,18 @@
             <div class="p-2" style="background-color: #f1f1f1; border-top: 2px solid #e7e7e7">
                 <b-container class="pr-4 d-flex justify-content-end">
                     <b-select size="sm" :options="taskGroupsOptions" v-model="activeTaskGroup"></b-select>
-                    <b-button v-if="activeTaskGroup != -1" class="ml-2 flex-shrink-0" size="sm" variant="danger" @click="onCreateTaskGroup">Удалить группу</b-button>
-                    <b-button class="ml-2 flex-shrink-0" size="sm" variant="info" @click="onCreateTaskGroup">Создать группу</b-button>
+                    <b-button-group class="flex-shrink-0">
+
+                        <b-button class="ml-2 flex-shrink-0" size="sm" variant="warning" @click="onCreateTaskGroup"
+                                  v-b-modal.newTaskGroupModal>Создать группу
+                        </b-button>
+                         <b-button class="ml-2 flex-shrink-0" size="sm" variant="warning"
+                                  v-b-modal.orderGroupsModal>Упорядочить группы
+                        </b-button>
+                         <b-button v-if="activeTaskGroup != -1" class="ml-2 flex-shrink-0" size="sm" variant="danger"
+                                  @click="onRemoveTaskGroup">Удалить группу
+                        </b-button>
+                    </b-button-group>
                     <b-button class="ml-2" size="sm" variant="info" @click="onCopyTasksClick">Скопировать</b-button>
                     <b-button class="ml-2" size="sm" variant="info" @click="onAddTaskClick">Добавить</b-button>
                 </b-container>
@@ -37,6 +47,20 @@
 
         </div>
         <copy-tasks-modal ref="copyTasksModal" @ok="onCopyTasksConfirm"/>
+        <b-modal id="newTaskGroupModal" title="Создать новую группу" @ok="onCreateTaskGroupOkClicked">
+            <b-form-group>
+                <b-input v-model="newTaskGroupTitle"></b-input>
+            </b-form-group>
+        </b-modal>
+        <b-modal id="orderGroupsModal" title="Упорядочить группы">
+            <b-list-group>
+                <draggable v-model="taskGroups" group="people" @start="drag=true" @end="drag=false">
+                    <b-list-group-item v-for="g in taskGroups" :key="g.id">
+                        {{g.title}}
+                    </b-list-group-item>
+                </draggable>
+            </b-list-group>
+        </b-modal>
     </div>
 </template>
 
@@ -53,6 +77,8 @@ import {ComplexityTypes} from "../consts";
 import _ from 'lodash';
 import Discipline from "../models/Discipline";
 import CopyTasksModal from "./CopyTasksModal.vue";
+import TaskGroup from "../models/TaskGroup";
+import has = Reflect.has;
 
 @Component({
     components: {CopyTasksModal, TaskEditor, TaskItem, draggable},
@@ -60,15 +86,14 @@ import CopyTasksModal from "./CopyTasksModal.vue";
         ...mapState({
             activeDiscipline: "activeDiscipline",
             activeLab: "activeLab",
-            taskGroups: "taskGroups",
         }),
     }
 })
 export default class LabPage extends Vue {
     public activeTask: any = null;
     public activeLab!: any;
-    public taskGroups!: any;
     public activeTaskGroup = -1;
+    public newTaskGroupTitle = "";
 
     @Watch("$route", {deep: true, immediate: true})
     onRouteChange() {
@@ -86,7 +111,16 @@ export default class LabPage extends Vue {
         this.$store.dispatch("updateTasksOrder", tasks)
     }
 
-    get taskGroupsOptions()  {
+    get taskGroups() {
+        return this.$store.state.taskGroups;
+    }
+
+    set taskGroups(taskGroups) {
+        this.$store.commit("setTaskGroups", taskGroups)
+        this.$store.dispatch("updateTaskGroupsOrder", taskGroups)
+    }
+
+    get taskGroupsOptions() {
         return [{value: -1, text: "без группы"}, ...this.taskGroups.map(x => {
             return {
                 value: x.id,
@@ -168,13 +202,13 @@ export default class LabPage extends Vue {
         this.activeTask = task;
     }
 
-    async onCopyTasksClick () {
+    async onCopyTasksClick() {
         (this.$refs.copyTasksModal as any).show()
     }
 
-    async onCopyTasksConfirm (tasks) {
+    async onCopyTasksConfirm(tasks) {
         for (const t of tasks) {
-            let data = t.get({ plain: true })
+            let data = t.get({plain: true})
             delete data.id
             data.lab_id = this.activeLab.id
             data.LabId = this.activeLab.id
@@ -186,7 +220,61 @@ export default class LabPage extends Vue {
     }
 
     async onCreateTaskGroup() {
+        this.newTaskGroupTitle = ""
+    }
 
+    async onRemoveTaskGroup() {
+        let has_subtasks = await Task.count({
+            where: {group_id: this.activeTaskGroup}
+        })
+
+        if (has_subtasks) {
+            await this.$bvModal.msgBoxOk(
+                'У группы есть задачи, не могу ее удалить', {
+                    title: 'Бесполезно',
+                    size: 'md',
+                    okVariant: 'info',
+                    footerClass: 'p-2',
+                    hideHeaderClose: false,
+                    centered: true
+                })
+            return;
+        }
+
+        let doDelete = await this.$bvModal.msgBoxConfirm(
+            `Точно удалить группу?`, {
+                title: 'Подтвердите',
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'Удалить',
+                cancelTitle: 'НЕЕЕЕТ!!!',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+        if (doDelete) {
+            await TaskGroup.destroy({
+                where: {
+                    id: this.activeTaskGroup
+                }
+            });
+            await this.$store.dispatch("fetchTaskGroups")
+            this.activeTaskGroup = -1
+        }
+    }
+
+    async onCreateTaskGroupOkClicked() {
+        let order = _(this.taskGroups).map((x: TaskGroup) => x.order || 0).max()
+        let task_group = TaskGroup.build({
+            lab_id: this.activeLab.id,
+            title: this.newTaskGroupTitle,
+            type: this.activeLab.type,
+            order: order + 1,
+        })
+        await task_group.save()
+        await this.$store.dispatch("fetchTaskGroups")
+        this.activeTaskGroup = task_group.id
     }
 }
 </script>

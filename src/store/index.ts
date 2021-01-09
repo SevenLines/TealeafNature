@@ -113,6 +113,14 @@ export default new Vuex.Store({
             }
             await dispatch("fetchLabs")
         },
+        async updateTaskGroupsOrder({commit, state, dispatch}, taskGroups) {
+            for (const t of taskGroups) {
+                let index = taskGroups.indexOf(t);
+                t.order = index + 1
+                await t.save()
+            }
+            await dispatch("fetchTaskGroups")
+        },
         async runJekyllProcess({state}) {
             if (state.jekyllProcess) {
                 kill(this.state.jekyllProcess.pid)

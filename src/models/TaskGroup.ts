@@ -1,15 +1,26 @@
 import {db} from "../db";
 import Lab from "./Lab";
 import {Task} from "./Task";
+import {Model} from "sequelize";
 const {DataTypes} = require('sequelize');
 
+export class TaskGroup extends Model {
+    title;
+    lab_id;
+    type;
+    order;
 
-export const TaskGroup = db.define("TaskGroup", {
+    getTasks;
+}
+
+TaskGroup.init({
     title: DataTypes.STRING,
     lab_id: DataTypes.NUMBER,
     type: DataTypes.NUMBER,
     order: DataTypes.NUMBER,
 }, {
+    sequelize: db,
+    modelName: "TaskGroup",
     tableName: "lessons_taskgroup",
     timestamps: false
 })
@@ -19,12 +30,5 @@ TaskGroup.hasMany(Task, {
     }
 })
 Task.belongsTo(TaskGroup)
-
-export interface ITaskGroup {
-    title: string,
-    lab_id: number,
-    type: number,
-    order: number,
-}
 
 export default TaskGroup
