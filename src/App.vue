@@ -1,11 +1,16 @@
 <template>
-    <div id="app" class="d-flex" style="height: 100%">
+    <div id="app" :class="{dark: darkTheme}" class="d-flex" style="height: 100%">
         <div class="d-flex flex-column w-100">
-            <b-navbar toggleable="lg" variant="light">
+            <b-navbar toggleable="lg" :variant="darkTheme ? 'dark' : 'light'">
                 <b-container>
-                    <b-navbar-brand to="/" class="ml-2">
-                        <i class="fad fa-mug-hot"></i> Чаинка Натуральная
-                    </b-navbar-brand>
+                    <div class="d-flex align-items-center">
+                        <b-navbar-brand to="/" class="ml-2">
+                            <i class="fad fa-mug-hot"></i> Чаинка Натуральная
+                        </b-navbar-brand>
+                        <b-checkbox v-model="darkTheme">
+                            <i class="fad fa-moon"></i>
+                        </b-checkbox>
+                    </div>
                     <b-breadcrumb v-if="breadcrumbs.length" class="mr-2">
                         <b-breadcrumb-item :to="item.to" v-for="item in breadcrumbs" :key="item.to">
                             <span v-html="item.title"></span>
@@ -37,6 +42,7 @@ import {mapState} from "vuex";
 export default class App extends Vue {
     private activeDiscipline!: any
     private activeLab!: any
+    darkTheme = false;
 
     get breadcrumbs() {
         let result = []
@@ -62,19 +68,25 @@ export default class App extends Vue {
             })
         }
 
-        // if (this.$route.name == "ArticleEditor") {
-        //
-        // }
-
         return result
     }
 }
 </script>
 
 <style lang="scss">
+@import "bootstrap-dark-theme";
 #app {
     .breadcrumb {
         margin-bottom: 0;
     }
+}
+
+.dark {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #839496;
+    text-align: left;
+    background-color: #002b36;
 }
 </style>
