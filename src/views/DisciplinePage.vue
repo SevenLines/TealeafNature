@@ -411,7 +411,7 @@ toc: true
     async onRemoveMarkdownFile(file) {
         console.log(file)
         let doDelete = await this.$bvModal.msgBoxConfirm(
-            `Точно удалить файл ${file}?`, {
+            `Точно удалить файл ${file.title}?`, {
                 title: 'Подтвердите',
                 size: 'sm',
                 buttonSize: 'sm',
@@ -423,7 +423,7 @@ toc: true
                 centered: true
             })
         if (doDelete) {
-
+            fs.unlinkSync(file.path)
             await this.$store.dispatch("fetchActiveDisciplineArticles")
         }
     }

@@ -5,6 +5,7 @@ import {Model} from "sequelize";
 const {DataTypes} = require('sequelize');
 
 export class TaskGroup extends Model {
+    id;
     title;
     lab_id;
     type;
