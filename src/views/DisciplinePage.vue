@@ -1,180 +1,194 @@
 <template>
-    <div class="container mt-4">
-
-        <div class="row">
-            <div class="col">
-                <b-form-group label="Название">
-                    <b-input v-model="form.title">
+    <div class="d-flex" style="height: 100%">
+        <div class="d-flex flex-column w-100">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <b-form-group label="Название">
+                            <b-input v-model="form.title">
+                            </b-input>
+                        </b-form-group>
+                    </div>
+                    <div class="col">
+                        <b-form-group label="Путь к папке jekyll">
+                            <b-input-group>
+                                <b-input v-model="form.jekyll_folder"></b-input>
+                                <b-input-group-addon>
+                                    <b-button variant="info" size="sm" @click="onJekyllFolderSelect">...</b-button>
+                                </b-input-group-addon>
+                            </b-input-group>
+                        </b-form-group>
+                    </div>
+                </div>
+                <b-form-group label="Скрипт для деплоя">
+                    <b-input v-model="form.deploy_command">
                     </b-input>
                 </b-form-group>
-            </div>
-            <div class="col">
-                <b-form-group label="Путь к папке jekyll">
-                    <b-input-group>
-                        <b-input v-model="form.jekyll_folder"></b-input>
-                        <b-input-group-addon>
-                            <b-button variant="info" size="sm" @click="onJekyllFolderSelect">...</b-button>
-                        </b-input-group-addon>
-                    </b-input-group>
-                </b-form-group>
-            </div>
-        </div>
-        <b-form-group label="Скрипт для деплоя">
-            <b-input v-model="form.deploy_command">
-            </b-input>
-        </b-form-group>
-        <div class="d-flex justify-content-between">
-            <b-button variant="info" @click="onSaveClick" :disabled="!isSaveEnabled">
-                Сохранить
-            </b-button>
-            <div>
-                <b-button-group>
-                    <b-button class="ml-2" variant="warning" @click="onGenerateClick">
-                        Сгенерировать
+                <div class="d-flex justify-content-between">
+                    <b-button variant="info" @click="onSaveClick" :disabled="!isSaveEnabled">
+                        Сохранить
                     </b-button>
-                    <b-button class="ml-2" variant="warning" @click="onRunProcessClick">
-                        Запустить
-                    </b-button>
-                </b-button-group>
-                <b-button class="ml-2" variant="danger" @click="onDeployClick">
-                    Задеплоить
-                </b-button>
-            </div>
-        </div>
-        <hr>
-        <div class="row">
-            <div class="col">
-                <h2>Лабы
-                    <button v-b-modal.labEditModel class="btn btn-sm btn-primary" @click="onLabAddClick"><i
-                        class="fas fa-plus"></i></button>
-                </h2>
-                <draggable v-model="labs" group="people" @start="drag=true" @end="drag=false">
-                    <div class="d-flex align-items-center justify-content-between border-bottom p-1 pl-0"
-                         v-for="l in labs" :key="l.id">
-                        <div>
-                            <a href="#" @click="setActiveLabId(l.id)">
-                                <router-link :to="`/lab/${l.id}`">
-                                    <i :class="l.icon"></i> {{ l.title }}
-                                </router-link>
-                            </a>
-                        </div>
-                        <div>
-                            <b-button  class="ml-2" size="sm" variant="outline-info"
-                                      @click="onToggleEye(l)">
-                                <i class="fad" :class="{'fa-eye': l.visible, 'fa-eye-slash': !l.visible}"></i>
-                            </b-button>
-                            <b-button v-b-modal.labEditModel class="ml-2" size="sm" variant="outline-info"
-                                      @click="onLabEditClick(l)">
-                                <i class="fad fa-edit"></i>
-                            </b-button>
-                            <b-button class="ml-2" size="sm" variant="outline-danger" @click="onRemove(l)">
-                                <i class="fad fa-trash"></i>
-                            </b-button>
-                        </div>
-                    </div>
-                </draggable>
-            </div>
-            <div class="col ml-4">
-                <h2>Статьи
-                    <button class="btn btn-sm btn-warning" v-b-modal.addMarkdownFileModal><i class="fas fa-plus"></i></button>
-                </h2>
-                <div  class="d-flex align-items-center justify-content-between border-bottom p-1 pl-0"
-                      v-for="f in activeDisciplineArticles" :key="f.name">
                     <div>
-                        <router-link :to="`/discipline/${activeDiscipline.id}/article/${f.title}`">
-                            {{ f.title }}
-                        </router-link>
-                    </div>
-                    <div>
-                        <b-button @click="onOpenMarkdownLink(f)" class="ml-2" size="sm" variant="outline-info">
-                            <i class="fad fa-link"></i>
-                        </b-button>
-                        <b-button class="ml-2" size="sm" variant="outline-danger" @click="onRemoveMarkdownFile(f)">
-                            <i class="fad fa-trash"></i>
+                        <b-button-group>
+                            <b-button class="ml-2" variant="warning" @click="onGenerateClick">
+                                Сгенерировать
+                            </b-button>
+                            <b-button class="ml-2" variant="warning" @click="onRunProcessClick">
+                                Запустить
+                            </b-button>
+                        </b-button-group>
+                        <b-button class="ml-2" variant="danger" @click="onDeployClick">
+                            Задеплоить
                         </b-button>
                     </div>
                 </div>
+                <hr>
+                <div class="row">
+                    <div class="col">
+                        <h2>Лабы
+                            <button v-b-modal.labEditModel class="btn btn-sm btn-primary" @click="onLabAddClick"><i
+                                class="fas fa-plus"></i></button>
+                        </h2>
+                    </div>
+                    <div class="col ml-4">
+                        <h2>Статьи
+                            <button class="btn btn-sm btn-warning" v-b-modal.addMarkdownFileModal><i
+                                class="fas fa-plus"></i></button>
+                        </h2>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <b-modal id="addMarkdownFileModal"
-                 @show="markdownFileFormPermalink=''; markdownFileFormTitle=''"
-                 @ok="onAddMarkdownFileOk"
-                 ok-title="Добавить"
-                 cancel-title="Отмена"
-                 title="Добавление нового markdown файла"
-        >
-            <b-form-group label="permalink">
-                <b-input v-model="markdownFileFormPermalink"></b-input>
-            </b-form-group>
-            <b-form-group label="title">
-                <b-input v-model="markdownFileFormTitle"></b-input>
-            </b-form-group>
-        </b-modal>
-
-        <b-modal size="xl" id="labEditModel" :title="labToEditForm.title" @ok="onLabSaveClick">
-            <b-form-row>
-                <b-col>
-                    <b-form-group label="Название">
-                        <b-input v-model="labToEditForm.title"/>
-                    </b-form-group>
-                </b-col>
-                <b-col>
-                    <b-form-group label="Иконка">
-                        <b-input-group>
-                            <b-input v-model="labToEditForm.icon"/>
-                            <b-input-group-append>
-                                <b-button variant="info">
-                                    <i :class="labToEditForm.icon"></i>
+            <div class="container flex-grow-1 overflow-hidden">
+                <div class="row" style="height: 100%">
+                    <div class="col overflow-auto" style="height: calc(100% - 2em)">
+                        <draggable v-model="labs" group="people" @start="drag=true" @end="drag=false">
+                            <div class="d-flex align-items-center justify-content-between border-bottom p-1 pl-0"
+                                 v-for="l in labs" :key="l.id">
+                                <div>
+                                    <a href="#" @click="setActiveLabId(l.id)">
+                                        <router-link :to="`/lab/${l.id}`">
+                                            <i :class="l.icon"></i> {{ l.title }}
+                                        </router-link>
+                                    </a>
+                                </div>
+                                <div>
+                                    <b-button class="ml-2" size="sm" variant="outline-info"
+                                              @click="onToggleEye(l)">
+                                        <i class="fad" :class="{'fa-eye': l.visible, 'fa-eye-slash': !l.visible}"></i>
+                                    </b-button>
+                                    <b-button v-b-modal.labEditModel class="ml-2" size="sm" variant="outline-info"
+                                              @click="onLabEditClick(l)">
+                                        <i class="fad fa-edit"></i>
+                                    </b-button>
+                                    <b-button class="ml-2" size="sm" variant="outline-danger" @click="onRemove(l)">
+                                        <i class="fad fa-trash"></i>
+                                    </b-button>
+                                </div>
+                            </div>
+                        </draggable>
+                    </div>
+                    <div class="col ml-4 overflow-auto" style="height: calc(100% - 2em)">
+                        <div class="d-flex align-items-center justify-content-between border-bottom p-1 pl-0"
+                             v-for="f in activeDisciplineArticles" :key="f.name">
+                            <div>
+                                <router-link :to="`/discipline/${activeDiscipline.id}/article/${f.title}`">
+                                    {{ f.title }}
+                                </router-link>
+                            </div>
+                            <div>
+                                <b-button @click="onOpenMarkdownLink(f)" class="ml-2" size="sm" variant="outline-info">
+                                    <i class="fad fa-link"></i>
                                 </b-button>
-                            </b-input-group-append>
-                        </b-input-group>
-                    </b-form-group>
-                </b-col>
-            </b-form-row>
+                                <b-button class="ml-2" size="sm" variant="outline-danger"
+                                          @click="onRemoveMarkdownFile(f)">
+                                    <i class="fad fa-trash"></i>
+                                </b-button>
+                            </div>
+                        </div>
 
-            <b-form-row>
-                <b-col>
-                    <b-form-group label="Алиас">
-                        <b-input v-model="labToEditForm.alias"/>
-                    </b-form-group>
-                </b-col>
-                <b-col>
-                    <b-form-group label="Номер">
-                        <b-input v-model="labToEditForm.order"/>
-                    </b-form-group>
-                </b-col>
-                <b-col>
-                    <b-form-group label="Ремарка">
-                        <b-input v-model="labToEditForm.remark"/>
-                    </b-form-group>
-                </b-col>
-            </b-form-row>
+                    </div>
+                </div>
+            </div>
+
+            <b-modal id="addMarkdownFileModal"
+                     @show="markdownFileFormPermalink=''; markdownFileFormTitle=''"
+                     @ok="onAddMarkdownFileOk"
+                     ok-title="Добавить"
+                     cancel-title="Отмена"
+                     title="Добавление нового markdown файла"
+            >
+                <b-form-group label="permalink">
+                    <b-input v-model="markdownFileFormPermalink"></b-input>
+                </b-form-group>
+                <b-form-group label="title">
+                    <b-input v-model="markdownFileFormTitle"></b-input>
+                </b-form-group>
+            </b-modal>
+
+            <b-modal size="xl" id="labEditModel" :title="labToEditForm.title" @ok="onLabSaveClick">
+                <b-form-row>
+                    <b-col>
+                        <b-form-group label="Название">
+                            <b-input v-model="labToEditForm.title"/>
+                        </b-form-group>
+                    </b-col>
+                    <b-col>
+                        <b-form-group label="Иконка">
+                            <b-input-group>
+                                <b-input v-model="labToEditForm.icon"/>
+                                <b-input-group-append>
+                                    <b-button variant="info">
+                                        <i :class="labToEditForm.icon"></i>
+                                    </b-button>
+                                </b-input-group-append>
+                            </b-input-group>
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+
+                <b-form-row>
+                    <b-col>
+                        <b-form-group label="Алиас">
+                            <b-input v-model="labToEditForm.alias"/>
+                        </b-form-group>
+                    </b-col>
+                    <b-col>
+                        <b-form-group label="Номер">
+                            <b-input v-model="labToEditForm.order"/>
+                        </b-form-group>
+                    </b-col>
+                    <b-col>
+                        <b-form-group label="Ремарка">
+                            <b-input v-model="labToEditForm.remark"/>
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
 
 
-            <b-form-row>
-                <b-col>
-                    <b-form-group label="Описание">
-                        <markdown-editor v-model="labToEditForm.content"
-                                         min-height="200px"
-                                         max-height="200px"
-                                         :preview-render-func="previewRenderFuncProxy"
-                                         :upload-func="uploadFileFuncProxy"
-                        />
-                    </b-form-group>
-                </b-col>
-                <b-col>
-                    <b-form-group label="Описание">
-                        <markdown-editor v-model="labToEditForm.content_additional"
-                                         min-height="200px"
-                                         max-height="200px"
-                                         :preview-render-func="previewRenderFuncProxy"
-                                         :upload-func="uploadFileFuncProxy"
-                        />
-                    </b-form-group>
-                </b-col>
-            </b-form-row>
-        </b-modal>
+                <b-form-row>
+                    <b-col>
+                        <b-form-group label="Описание">
+                            <markdown-editor v-model="labToEditForm.content"
+                                             min-height="200px"
+                                             max-height="200px"
+                                             :preview-render-func="previewRenderFuncProxy"
+                                             :upload-func="uploadFileFuncProxy"
+                            />
+                        </b-form-group>
+                    </b-col>
+                    <b-col>
+                        <b-form-group label="Описание">
+                            <markdown-editor v-model="labToEditForm.content_additional"
+                                             min-height="200px"
+                                             max-height="200px"
+                                             :preview-render-func="previewRenderFuncProxy"
+                                             :upload-func="uploadFileFuncProxy"
+                            />
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+            </b-modal>
+        </div>
     </div>
 </template>
 
@@ -387,12 +401,12 @@ export default class DisciplinePage extends Vue {
         this.$store.dispatch("runDeployProcess", !!createGit)
     }
 
-    async onToggleEye (lab: Lab) {
+    async onToggleEye(lab: Lab) {
         lab.visible = !lab.visible;
         await lab.save()
     }
 
-    async onAddMarkdownFileOk () {
+    async onAddMarkdownFileOk() {
         let pth = path.join(this.activeDiscipline.jekyll_folder, "common", `${this.markdownFileFormTitle}.md`)
         let content = `---
 layout: page
@@ -428,7 +442,7 @@ toc: true
         }
     }
 
-    onOpenMarkdownLink (f) {
+    onOpenMarkdownLink(f) {
         let href = `http://localhost:4000/${f.permalink}`
         shell.openExternal(href);
     }
