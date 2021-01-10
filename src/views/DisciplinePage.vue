@@ -76,15 +76,41 @@
             </div>
             <div class="col ml-4">
                 <h2>Статьи
-                    <button class="btn btn-sm btn-warning"><i class="fas fa-plus"></i></button>
+                    <button class="btn btn-sm btn-warning" v-b-modal.addMarkdownFileModal><i class="fas fa-plus"></i></button>
                 </h2>
-                <div v-for="f in activeDisciplineArticles" :key="f.name">
-                    <router-link :to="`/discipline/${activeDiscipline.id}/article/${f}`">
-                        {{ f }}
-                    </router-link>
+                <div  class="d-flex align-items-center justify-content-between border-bottom p-1 pl-0"
+                      v-for="f in activeDisciplineArticles" :key="f.name">
+                    <div>
+                        <router-link :to="`/discipline/${activeDiscipline.id}/article/${f.title}`">
+                            {{ f.title }}
+                        </router-link>
+                    </div>
+                    <div>
+                        <b-button @click="onOpenMarkdownLink(f)" class="ml-2" size="sm" variant="outline-info">
+                            <i class="fad fa-link"></i>
+                        </b-button>
+                        <b-button class="ml-2" size="sm" variant="outline-danger" @click="onRemoveMarkdownFile(f)">
+                            <i class="fad fa-trash"></i>
+                        </b-button>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <b-modal id="addMarkdownFileModal"
+                 @show="markdownFileFormPermalink=''; markdownFileFormTitle=''"
+                 @ok="onAddMarkdownFileOk"
+                 ok-title="Добавить"
+                 cancel-title="Отмена"
+                 title="Добавление нового markdown файла"
+        >
+            <b-form-group label="permalink">
+                <b-input v-model="markdownFileFormPermalink"></b-input>
+            </b-form-group>
+            <b-form-group label="title">
+                <b-input v-model="markdownFileFormTitle"></b-input>
+            </b-form-group>
+        </b-modal>
 
         <b-modal size="xl" id="labEditModel" :title="labToEditForm.title" @ok="onLabSaveClick">
             <b-form-row>
@@ -163,6 +189,9 @@ import Lab from "../models/Lab";
 import {previewRenderFunc, uploadFileFunc} from "../utils";
 import draggable from 'vuedraggable'
 import _ from "lodash";
+import * as fs from "fs";
+import path from "path";
+import {shell} from "electron";
 
 const {dialog} = require('electron').remote
 
@@ -175,10 +204,8 @@ const {dialog} = require('electron').remote
     computed: {
         ...mapState({
             activeDiscipline: "activeDiscipline",
-        }),
-        ...mapGetters({
             activeDisciplineArticles: "activeDisciplineArticles",
-        })
+        }),
     },
     methods: {
         ...mapActions({
@@ -206,6 +233,9 @@ export default class DisciplinePage extends Vue {
         title: "",
         deploy_command: "",
     };
+
+    markdownFileFormPermalink: string = "";
+    markdownFileFormTitle: string = "";
 
     get labs() {
         return this.$store.state.labs;
@@ -362,5 +392,45 @@ export default class DisciplinePage extends Vue {
         await lab.save()
     }
 
+    async onAddMarkdownFileOk () {
+        let pth = path.join(this.activeDiscipline.jekyll_folder, "common", `${this.markdownFileFormTitle}.md`)
+        let content = `---
+layout: page
+permalink: ${this.markdownFileFormPermalink}
+title: ${this.markdownFileFormTitle}
+toc: true
+---`
+        await fs.writeFile(pth, content, err => {
+            if (err) {
+                console.error(err)
+            }
+            this.$store.dispatch("fetchActiveDisciplineArticles")
+        })
+    }
+
+    async onRemoveMarkdownFile(file) {
+        console.log(file)
+        let doDelete = await this.$bvModal.msgBoxConfirm(
+            `Точно удалить файл ${file}?`, {
+                title: 'Подтвердите',
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'Удалить',
+                cancelTitle: 'НЕЕЕЕТ!!!',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+        if (doDelete) {
+
+            await this.$store.dispatch("fetchActiveDisciplineArticles")
+        }
+    }
+
+    onOpenMarkdownLink (f) {
+        let href = `http://localhost:4000/${f.permalink}`
+        shell.openExternal(href);
+    }
 }
 </script>

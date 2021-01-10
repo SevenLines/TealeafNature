@@ -22,6 +22,7 @@ export default new Vuex.Store({
         activeDiscipline: {},
         activeLab: {},
         jekyllProcess: null,
+        activeDisciplineArticles: [],
     },
     mutations: {
         setDisciplines(state, disciplines) {
@@ -42,22 +43,9 @@ export default new Vuex.Store({
         setActiveLab(state, lab) {
             state.activeLab = lab;
         },
-
-    },
-    getters: {
-        activeDisciplineArticles({activeDiscipline}) {
-            let files = [];
-            if (!_.isEmpty(activeDiscipline)) {
-                let jekyll_folder = (activeDiscipline as any).jekyll_folder
-                if (jekyll_folder) {
-                    let dir = path.join(jekyll_folder, "common")
-                    if (fs.existsSync(dir)) {
-                        files = fs.readdirSync(dir).filter(x => x.endsWith(".md"));
-                    }
-                }
-            }
-            return files;
-        }
+        setActiveDisciplineArticles(state, articles) {
+            state.activeDisciplineArticles = articles;
+        },
     },
     actions: {
         async fetchDisciplines({commit}) {
@@ -84,6 +72,7 @@ export default new Vuex.Store({
             let discipline = await Discipline.findOne({where: {id: disciplineId}})
             commit("setActiveDiscipline", discipline)
             dispatch("fetchLabs")
+            dispatch("fetchActiveDisciplineArticles")
         },
         async setActiveLabId({commit, state, dispatch}, labId) {
             commit("setLabs", [])
@@ -120,6 +109,30 @@ export default new Vuex.Store({
                 await t.save()
             }
             await dispatch("fetchTaskGroups")
+        },
+        async fetchActiveDisciplineArticles({state, commit}) {
+            let files = [];
+            if (!_.isEmpty(state.activeDiscipline)) {
+                let jekyll_folder = (state.activeDiscipline as any).jekyll_folder
+                if (jekyll_folder) {
+                    let dir = path.join(jekyll_folder, "common")
+                    if (fs.existsSync(dir)) {
+                        files = fs.readdirSync(dir).filter(x => x.endsWith(".md")).map(x => {
+                            let item = {
+                                "title": x,
+                                "path": path.join(dir, x)
+                            }
+                            let content = fs.readFileSync(item.path, 'utf8')
+                            let match = content.match(/permalink:\s+(.*)/)
+                            if (match) {
+                                item['permalink'] = match[1]
+                            }
+                            return item;
+                        });
+                    }
+                }
+            }
+            commit("setActiveDisciplineArticles", files)
         },
         async runJekyllProcess({state}) {
             if (state.jekyllProcess) {
