@@ -60,7 +60,9 @@
                 renderingConfig: {
                     codeSyntaxHighlighting: true,
                     hljs
-                }
+                },
+                indentWithTabs: false,
+                tabSize: 4,
             });
             if (this.mde) {
                 this.mde.value(this.value);
