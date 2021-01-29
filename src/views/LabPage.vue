@@ -169,6 +169,7 @@ export default class LabPage extends Vue {
         this.activeTask.complexity = task_form.complexity;
         this.activeTask.additional_content = task_form.additional_content;
         this.activeTask.visible = task_form.visible;
+        this.activeTask.youtube_link = task_form.youtube_link;
 
         let isNew = !this.activeTask.id;
 
@@ -192,6 +193,7 @@ export default class LabPage extends Vue {
             title: "",
             order: (_(this.tasks).map(x => x.order).max() + 1) || 0,
             custom_class: "",
+            youtube_link: "",
             content: "",
             complexity: ComplexityTypes.easy,
             additional_content: "",
@@ -295,7 +297,7 @@ export default class LabPage extends Vue {
 
     &.active {
         padding: 1em;
-        flex-basis: 500px;
+        flex-basis: 550px;
         flex-shrink: 0;
         overflow: hidden;
     }

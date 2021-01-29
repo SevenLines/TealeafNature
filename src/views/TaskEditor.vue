@@ -25,6 +25,11 @@
                 />
             </div>
         </div>
+        <div class="row mb-2">
+            <div class="col d-flex align-items-center">
+                <div class="mr-2"><i class="fab fa-2x fa-youtube"></i></div> <b-input v-model="form.youtube_link"></b-input>
+            </div>
+        </div>
         <div class="row">
             <div class="col d-flex align-items-center">
                 <div class="flex-shrink-0 mr-2">Кастомный класс:</div> <b-input v-model="form.custom_class"></b-input>
@@ -53,6 +58,7 @@ export default class TaskEditor extends Vue {
         order: null,
         group_id: null,
         custom_class: null,
+        youtube_link: null,
         content: "",
         complexity: null,
         additional_content: "",
@@ -76,6 +82,7 @@ export default class TaskEditor extends Vue {
             order: this.task ? this.task.order : null,
             group_id: this.task ? this.task.group_id : null,
             custom_class: this.task ? this.task.custom_class : null,
+            youtube_link: this.task ? this.task.youtube_link : null,
             content: this.task ? this.task.content : "",
             complexity: this.task ? this.task.complexity : null,
             additional_content: this.task ? this.task.additional_content : "",

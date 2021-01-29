@@ -48,7 +48,6 @@ export class Discipline extends Model {
             let task_groups = {}
             let tasks = await lab.getTasks({order: [["order"], ["id"]]})
             for (let t of tasks) {
-                console.log(t)
                 let task_group = setDefault(task_groups, t.group_id || 0, {
                     'id': t.group_id || 0,
                     'title': t.group_id ? t.getTaskGroup().title : "default",
@@ -65,6 +64,7 @@ export class Discipline extends Model {
                     "custom_class": t.custom_class,
                     "task_group": t.group_id,
                     "visible": t.visible,
+                    "youtube_link": t.youtube_link,
                     "students": [],
                 }
 

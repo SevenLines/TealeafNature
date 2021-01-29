@@ -14,6 +14,7 @@ export class Task extends Model {
     group_id: number;
     lab_id: number;
     custom_class: string;
+    youtube_link: string;
 
     getLab;
     getTaskGroup;
@@ -30,6 +31,7 @@ Task.init({
     group_id: DataTypes.NUMBER,
     lab_id: DataTypes.NUMBER,
     custom_class: DataTypes.STRING,
+    youtube_link: DataTypes.STRING,
 }, {
     sequelize: db,
     modelName: "Task",
@@ -55,6 +57,7 @@ export interface ITask {
     group_id: number,
     lab_id: number,
     custom_class: string,
+    youtube_link: string,
 }
 
 export default Task
