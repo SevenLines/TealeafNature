@@ -5,7 +5,7 @@
             <difficult-selector v-model="form.complexity"></difficult-selector>
             <b-button size="sm" variant="info" @click="$emit('cancel')">Отменить</b-button>
         </div>
-        <div v-show="form" class="row">
+        <div class="row">
             <div class="col">
                 <label>Описание</label>
                 <markdown-editor v-model="form.content"
@@ -15,6 +15,8 @@
                                  :upload-func="uploadFileFuncProxy"
                 />
             </div>
+        </div>
+        <div class="row">
             <div class="col">
                 <label>Подсказка</label>
                 <markdown-editor v-model="form.additional_content"

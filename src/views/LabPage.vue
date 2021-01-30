@@ -9,10 +9,10 @@
                         <b-button class="ml-2 flex-shrink-0" size="sm" variant="warning" @click="onCreateTaskGroup"
                                   v-b-modal.newTaskGroupModal>Создать группу
                         </b-button>
-                         <b-button class="ml-2 flex-shrink-0" size="sm" variant="warning"
+                        <b-button class="ml-2 flex-shrink-0" size="sm" variant="warning"
                                   v-b-modal.orderGroupsModal>Упорядочить группы
                         </b-button>
-                         <b-button v-if="activeTaskGroup != -1" class="ml-2 flex-shrink-0" size="sm" variant="danger"
+                        <b-button v-if="activeTaskGroup != -1" class="ml-2 flex-shrink-0" size="sm" variant="danger"
                                   @click="onRemoveTaskGroup">Удалить группу
                         </b-button>
                     </b-button-group>
@@ -20,30 +20,34 @@
                     <b-button class="ml-2" size="sm" variant="info" @click="onAddTaskClick">Добавить</b-button>
                 </b-container>
             </div>
-            <div class="flex-grow-1 overflow-auto p-2">
-                <div class="container">
-                    <draggable v-model="tasks" group="people" @start="drag=true" @end="drag=false">
-                        <task-item class="m-2"
-                                   :task="t"
-                                   v-for="t in tasks"
-                                   :key="t.id"
-                                   :active-task="activeTask"
-                                   @edit="onEdit(t)"
-                                   @eye="onEyeClick(t)"
-                                   @remove="onRemove(t)"
-                        ></task-item>
-                    </draggable>
+            <div class="flex-grow-1 overflow-hidden" style="padding-right: 15px">
+                <div class="row" style="height: 100%">
+                    <div class="col overflow-auto" style="height: calc(100% )">
+                        <div class="container">
+                            <draggable v-model="tasks" group="people" @start="drag=true" @end="drag=false">
+                                <task-item class="m-2"
+                                           :task="t"
+                                           v-for="t in tasks"
+                                           :key="t.id"
+                                           :active-task="activeTask"
+                                           @edit="onEdit(t)"
+                                           @eye="onEyeClick(t)"
+                                           @remove="onRemove(t)"
+                                ></task-item>
+                            </draggable>
+                        </div>
+                    </div>
+                    <task-editor
+                        class="task-editor"
+                        :class="{'active': !!activeTask}"
+                        :task="activeTask"
+                        @cancel="activeTask=null"
+                        @save="onSaveTaskClick"
+                    >
+                    </task-editor>
                 </div>
             </div>
-            <task-editor
-                class="task-editor"
-                style=" box-sizing: border-box"
-                :class="{'active': !!activeTask}"
-                :task="activeTask"
-                @cancel="activeTask=null"
-                @save="onSaveTaskClick"
-            >
-            </task-editor>
+
 
         </div>
         <copy-tasks-modal ref="copyTasksModal" @ok="onCopyTasksConfirm"/>
@@ -56,7 +60,7 @@
             <b-list-group>
                 <draggable v-model="taskGroups" group="people" @start="drag=true" @end="drag=false">
                     <b-list-group-item v-for="g in taskGroups" :key="g.id">
-                        {{g.title}}
+                        {{ g.title }}
                     </b-list-group-item>
                 </draggable>
             </b-list-group>
@@ -283,24 +287,28 @@ export default class LabPage extends Vue {
 
 <style lang="scss">
 .task-editor {
-    box-shadow: 0 0 4px silver;
 
-    width: 100%;
-    height: 0;
-    overflow: hidden;
-    flex-basis: 0;
-
-    left: 0;
-    background-color: white;
-    transition: all 0.3s;
-    animation-timing-function: ease-out;
 
     &.active {
         padding: 1em;
-        flex-basis: 550px;
-        flex-shrink: 0;
         overflow: hidden;
+        flex-basis: 0;
+        flex-grow: 1;
+        visibility: visible;
     }
+
+    flex-basis: 0;
+    flex-grow: 0;
+    max-width: 100%;
+    overflow: hidden;
+
+    box-shadow: 0 0 4px silver;
+
+    background-color: white;
+    transition: all 0.5s;
+    animation-timing-function: ease-in-out;
+    visibility: hidden;
+
 }
 </style>
 
