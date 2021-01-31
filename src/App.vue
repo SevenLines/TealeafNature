@@ -77,13 +77,13 @@ export default class App extends Vue {
 
     @Watch("consoleActive")
     onConsoleActiveChange () {
-        this.$refs.log.scrollTop = this.$refs.log.scrollHeight
+        (this.$refs.log as Element).scrollTop = (this.$refs.log as Element).scrollHeight
     }
 
     @Watch("jekyllProcessLog", {deep: true})
     onJekyllProcessChange () {
         this.$nextTick(() => {
-            this.$refs.log.scrollTop = this.$refs.log.scrollHeight
+            (this.$refs.log  as Element).scrollTop = (this.$refs.log as Element).scrollHeight
         })
     }
 

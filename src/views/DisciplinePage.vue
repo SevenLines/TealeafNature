@@ -240,6 +240,7 @@ const {dialog} = require('electron').remote
 })
 export default class DisciplinePage extends Vue {
     private activeDiscipline!: Discipline;
+    private jekyllProcess!: any;
     labToChange: any;
     labToEditForm: any = {
         alias: "",
