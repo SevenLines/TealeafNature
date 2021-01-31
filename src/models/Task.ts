@@ -1,7 +1,8 @@
 import Lab from "./Lab";
 const {DataTypes} = require('sequelize');
 import {db} from '../db';
-import {Model} from "sequelize";
+import {InstanceDestroyOptions, Model} from "sequelize";
+import {HookReturn} from "sequelize/types/lib/hooks";
 
 export class Task extends Model {
     title: string;
@@ -39,6 +40,11 @@ Task.init({
     timestamps: false,
     hooks: {
         async afterSave(instance, options) {
+            let lab: Lab = await instance.getLab();
+            let discipline = await lab.getDiscipline()
+            await discipline.generateLabsYaml()
+        },
+        async afterDestroy(instance, options: InstanceDestroyOptions) {
             let lab: Lab = await instance.getLab();
             let discipline = await lab.getDiscipline()
             await discipline.generateLabsYaml()

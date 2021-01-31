@@ -22,6 +22,7 @@
     "codemirror": "^5.59.1",
     "core-js": "^3.6.5",
     "easymde": "^2.13.0",
+    "fs-extra": "^9.1.0",
     "highlightjs": "^9.16.2",
     "js-yaml": "^4.0.0",
     "lodash": "^4.17.20",
@@ -83,7 +84,8 @@
       "parser": "@typescript-eslint/parser"
     },
     "rules": {
-      "no-unused-vars": "off"
+      "no-unused-vars": "off",
+      "no-useless-escape": "off"
     }
   },
   "browserslist": [

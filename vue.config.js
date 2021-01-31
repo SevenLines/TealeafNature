@@ -3,6 +3,18 @@ module.exports = {
         electronBuilder: {
             nodeIntegration: true,
             enableRemoteModule: true,
+            builderOptions: {
+                extraFiles: [
+                    {
+                        "from": "fabfile.py",
+                        "to": "fabfile.py",
+                    },
+                    {
+                        "from": "fabric.yaml",
+                        "to": "fabric.yaml",
+                    }
+                ]
+            }
         }
     },
     // configureWebpack: {

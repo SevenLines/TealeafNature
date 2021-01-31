@@ -1,6 +1,6 @@
 const {DataTypes} = require('sequelize');
 import {db} from '../db';
-import {Model} from "sequelize";
+import {InstanceDestroyOptions, Model} from "sequelize";
 import Discipline from "./Discipline";
 import {Task} from "./Task";
 import TaskGroup from "./TaskGroup";
@@ -45,6 +45,10 @@ Lab.init({
     updatedAt: "modified_at",
     hooks: {
         async afterSave(instance, options) {
+            let discipline = await instance.getDiscipline()
+            await discipline.generateLabsYaml()
+        },
+        async afterDestroy(instance, options: InstanceDestroyOptions) {
             let discipline = await instance.getDiscipline()
             await discipline.generateLabsYaml()
         }
