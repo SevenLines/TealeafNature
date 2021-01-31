@@ -12,6 +12,10 @@ module.exports = {
                     {
                         "from": "fabric.yaml",
                         "to": "fabric.yaml",
+                    },
+                    {
+                        "from": "icon.png",
+                        "to": "icon.png",
                     }
                 ]
             }
