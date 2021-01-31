@@ -34,6 +34,9 @@ export default class Discipline extends Model {
     @Column(DataTypes.STRING)
     deploy_command: string;
 
+    @Column(DataTypes.STRING)
+    site_url: string;
+
     getLabs: Function;
 
     async generateLabsYaml() {

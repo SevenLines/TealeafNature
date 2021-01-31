@@ -24,6 +24,15 @@
                     <b-input v-model="form.deploy_command">
                     </b-input>
                 </b-form-group>
+                <b-form-group label="Ссылка на сайт">
+                    <b-input-group>
+                        <b-input v-model="form.site_url">
+                        </b-input>
+                        <b-input-group-append>
+                            <b-button @click="onSiteUrlClick" type="link"><i class="fas fa-link"></i></b-button>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-form-group>
                 <div class="d-flex justify-content-between">
                     <b-button variant="info" @click="onSaveClick" :disabled="!isSaveEnabled">
                         Сохранить
@@ -246,6 +255,7 @@ export default class DisciplinePage extends Vue {
         jekyll_folder: "",
         title: "",
         deploy_command: "",
+        site_url: "",
     };
 
     markdownFileFormPermalink: string = "";
@@ -273,6 +283,7 @@ export default class DisciplinePage extends Vue {
         this.form.title = this.activeDiscipline.title;
         this.form.jekyll_folder = this.activeDiscipline.jekyll_folder;
         this.form.deploy_command = this.activeDiscipline.deploy_command;
+        this.form.site_url = this.activeDiscipline.site_url;
     }
 
     @Watch("$route", {deep: true, immediate: true})
@@ -284,12 +295,14 @@ export default class DisciplinePage extends Vue {
         return this.activeDiscipline.title != this.form.title
             || this.activeDiscipline.jekyll_folder != this.form.jekyll_folder
             || this.activeDiscipline.deploy_command != this.form.deploy_command
+            || this.activeDiscipline.site_url != this.form.site_url
     }
 
     onSaveClick() {
         this.activeDiscipline.title = this.form.title;
         this.activeDiscipline.jekyll_folder = this.form.jekyll_folder;
         this.activeDiscipline.deploy_command = this.form.deploy_command;
+        this.activeDiscipline.site_url = this.form.site_url;
         this.activeDiscipline.save()
     }
 
@@ -445,6 +458,10 @@ toc: true
     onOpenMarkdownLink(f) {
         let href = `http://localhost:4000/${f.permalink}`
         shell.openExternal(href);
+    }
+
+    onSiteUrlClick(f) {
+        shell.openExternal(this.activeDiscipline.site_url);
     }
 }
 </script>

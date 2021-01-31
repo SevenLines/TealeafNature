@@ -4,13 +4,22 @@
             <button v-b-modal.disciplineEditModel class="btn btn-sm btn-primary">
                 <i class="fas fa-plus"></i></button>
         </h2>
-        <div class="d-flex align-items-center justify-content-between border-bottom p-1 pl-0" v-for="d in disciplines" :key="d.id">
-            <router-link :to="`/discipline/${d.id}`">
-                {{ d.title }}
-            </router-link>
-            <b-button class="ml-2" size="sm" variant="outline-danger" @click="onRemove(d)">
-                <i class="fad fa-trash"></i>
-            </b-button>
+        <div class="d-flex align-items-center justify-content-between border-bottom p-1 pl-0" v-for="d in disciplines"
+             :key="d.id">
+            <div>
+                <b-button v-if="d.site_url" class="mr-2" size="sm" variant="outline-primary" @click="onSiteUrlClick(d)">
+                    <i class="fad fa-link"></i>
+                </b-button>
+                <router-link :to="`/discipline/${d.id}`">
+                    {{ d.title }}
+                </router-link>
+            </div>
+            <div>
+
+                <b-button class="ml-4" size="sm" variant="outline-danger" @click="onRemove(d)">
+                    <i class="fad fa-trash"></i>
+                </b-button>
+            </div>
         </div>
 
         <b-modal size="lg" id="disciplineEditModel" title="Добавить новую дисциплину" @ok="onDisciplineSaveClick">
@@ -30,6 +39,7 @@ import {Vue, Watch} from "vue-property-decorator";
 import {mapActions, mapState} from "vuex";
 import Component from "vue-class-component";
 import Discipline from "../models/Discipline";
+import {shell} from "electron";
 
 @Component({
     computed: {
@@ -54,14 +64,14 @@ export default class Dashboard extends Vue {
         this.$store.dispatch("fetchDisciplines")
     }
 
-    async onDisciplineSaveClick () {
+    async onDisciplineSaveClick() {
         let discipline = Discipline.build({
             title: this.newDisciplineTitle,
             jekyll_folder: this.newDisciplineJekyllFolder,
         })
         await discipline.save();
         this.$store.dispatch("fetchDisciplines")
-        this.$router.push({ name: 'DisciplinePage', params: { disciplineId: discipline.id.toString() } })
+        this.$router.push({name: 'DisciplinePage', params: {disciplineId: discipline.id.toString()}})
     }
 
     async onRemove(discipline) {
@@ -81,6 +91,10 @@ export default class Dashboard extends Vue {
             await discipline.destroy();
             await this.$store.dispatch("fetchDisciplines")
         }
+    }
+
+    onSiteUrlClick(d) {
+        shell.openExternal(d.site_url);
     }
 }
 </script>
