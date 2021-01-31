@@ -60,6 +60,11 @@ export default class Dashboard extends Vue {
     newDisciplineTitle: string = "";
     newDisciplineJekyllFolder: string = "";
 
+    @Watch("$route", {deep: true, immediate: true})
+    onRouteChange() {
+        this.$store.dispatch("setActiveDisciplineId", null)
+    }
+
     created() {
         this.$store.dispatch("fetchDisciplines")
     }

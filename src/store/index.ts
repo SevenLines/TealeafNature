@@ -5,6 +5,7 @@ import Lab from "../models/Lab";
 import * as fs from "fs";
 import _ from 'lodash';
 import path from "path";
+import {execAsync, spawnAsync} from "../utils";
 
 const child_process = require('child_process');
 const kill = require('tree-kill');
@@ -21,7 +22,9 @@ export default new Vuex.Store({
         taskGroups: [],
         activeDiscipline: {},
         activeLab: {},
+        consoleActive: false,
         jekyllProcess: null,
+        jekyllProcessLog: [],
         activeDisciplineArticles: [],
     },
     mutations: {
@@ -46,6 +49,17 @@ export default new Vuex.Store({
         setActiveDisciplineArticles(state, articles) {
             state.activeDisciplineArticles = articles;
         },
+        setConsoleActive(state, value) {
+            state.consoleActive = value;
+        },
+        pushJekyllLogItem(state, text) {
+            let content = text.toString().replace(/\n|(\r\n)|(\n\r)/gi, "<br>")
+            content = content.replace(/\s/gi, "&nbsp;")
+            state.jekyllProcessLog.push(content)
+        },
+        clearJekyllLog(state) {
+            state.jekyllProcessLog = []
+        }
     },
     actions: {
         async fetchDisciplines({commit}) {
@@ -69,10 +83,14 @@ export default new Vuex.Store({
             commit("setTasks", [])
             commit("setTaskGroups", [])
 
-            let discipline = await Discipline.findOne({where: {id: disciplineId}})
-            commit("setActiveDiscipline", discipline)
-            dispatch("fetchLabs")
-            dispatch("fetchActiveDisciplineArticles")
+            if (disciplineId) {
+                let discipline = await Discipline.findOne({where: {id: disciplineId}})
+                commit("setActiveDiscipline", discipline)
+                dispatch("fetchLabs")
+                dispatch("fetchActiveDisciplineArticles")
+            } else {
+                commit("setActiveDiscipline", {})
+            }
         },
         async setActiveLabId({commit, state, dispatch}, labId) {
             commit("setLabs", [])
@@ -134,46 +152,78 @@ export default new Vuex.Store({
             }
             commit("setActiveDisciplineArticles", files)
         },
-        async runJekyllProcess({state}) {
+        async killJekyllProcess({state}) {
+            if (state.jekyllProcess) {
+                kill(this.state.jekyllProcess.pid)
+                this.state.jekyllProcess = null
+            }
+        },
+        async runJekyllProcess({state, commit}) {
             if (state.jekyllProcess) {
                 kill(this.state.jekyllProcess.pid)
                 this.state.jekyllProcess = null
             }
             if (state.activeDiscipline) {
                 state.jekyllProcess = child_process.spawn('serve.cmd', {
-                    detached: true,
+                    // detached: true,
+                    shell: true,
                     cwd: (state.activeDiscipline as Discipline).jekyll_folder,
+                });
+
+                state.jekyllProcess.stdout.on('data', (data) => {
+                    commit("pushJekyllLogItem", data)
+                });
+
+                state.jekyllProcess.on('close', (code) => {
+                    commit("pushJekyllLogItem", `child process exited with code ${code}\n`)
                 });
             }
         },
-        async runDeployProcess({state}, with_git) {
+        async runDeployProcess({state, commit}, with_git) {
+            commit("clearJekyllLog")
+            commit("setConsoleActive", true)
             if (state.activeDiscipline) {
                 if (with_git) {
-                    console.log("фиксирую именения в stage")
-                    child_process.execSync(`git add ${(state.activeDiscipline as Discipline).jekyll_folder}`, {
-                        cwd: (state.activeDiscipline as Discipline).jekyll_folder
+                    commit("pushJekyllLogItem", `фиксирую изменения в stage\n`)
+                    await spawnAsync(`git add ${(state.activeDiscipline as Discipline).jekyll_folder}`, {
+                        shell: true,
+                        cwd: (state.activeDiscipline as Discipline).jekyll_folder,
+                    }, (data) => {
+                        commit("pushJekyllLogItem", `${data}\n`)
                     })
-                    console.log("пытаюсь создать коммит")
-                    try {
-                        child_process.execSync(`git commit -a -m "автоматический коммит из чаинки натуральной"`, {
-                            cwd: (state.activeDiscipline as Discipline).jekyll_folder
-                        })
-                    } catch (e) {
-                        console.error(e)
-                    }
-                    console.log("отправляю на сервер")
-                    child_process.execSync("git push", {
+
+                    commit("pushJekyllLogItem", `пытаюсь создать коммит\n`)
+                    await spawnAsync(`git commit -a -m "автоматический коммит из чаинки натуральной"`, {
+                        shell: true,
                         cwd: (state.activeDiscipline as Discipline).jekyll_folder
+                    }, (data) => {
+                        commit("pushJekyllLogItem", `${data}\n`)
+                    })
+
+                    commit("pushJekyllLogItem", `отправляю на сервер\n`)
+                    await spawnAsync("git push", {
+                        shell: true,
+                        cwd: (state.activeDiscipline as Discipline).jekyll_folder,
+                    }, (data) => {
+                        commit("pushJekyllLogItem", `${data}\n`)
                     })
                 }
                 let params = (state.activeDiscipline as Discipline).deploy_command.split(/\s+/)
                 let ps = child_process.spawn(params[0], params.splice(1), {
-                    detached: true,
                     cwd: process.cwd(),
                 },);
 
                 ps.stderr.on('data', (data) => {
-                    console.error(`ps stderr: ${data}`);
+                    let content = data.toString().replace(/\n|(\r\n)|(\n\r)/gi, "<br>")
+                    content = content.replace(/\s/gi, "&nbsp;")
+                    state.jekyllProcessLog.push(content)
+                });
+
+                ps.on('close', (code) => {
+                    if (code == 0) {
+                        commit("setConsoleActive", false)
+                    }
+                    commit("pushJekyllLogItem", `Процесс завершен с кодом ${code}\n`)
                 });
             }
         }

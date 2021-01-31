@@ -43,7 +43,8 @@
                                 Сгенерировать
                             </b-button>
                             <b-button class="ml-2" variant="warning" @click="onRunProcessClick">
-                                Запустить
+                                <span v-if="!jekyllProcess">Запустить</span>
+                                <span v-else>Остановить</span>
                             </b-button>
                         </b-button-group>
                         <b-button class="ml-2" variant="danger" @click="onDeployClick">
@@ -228,6 +229,7 @@ const {dialog} = require('electron').remote
         ...mapState({
             activeDiscipline: "activeDiscipline",
             activeDisciplineArticles: "activeDisciplineArticles",
+            jekyllProcess: "jekyllProcess",
         }),
     },
     methods: {
@@ -395,7 +397,11 @@ export default class DisciplinePage extends Vue {
     }
 
     onRunProcessClick() {
-        this.$store.dispatch("runJekyllProcess")
+        if (!this.jekyllProcess) {
+            this.$store.dispatch("runJekyllProcess")
+        } else {
+            this.$store.dispatch("killJekyllProcess")
+        }
     }
 
     async onDeployClick() {

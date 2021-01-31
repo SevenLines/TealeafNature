@@ -33,6 +33,7 @@
                                            @edit="onEdit(t)"
                                            @eye="onEyeClick(t)"
                                            @remove="onRemove(t)"
+                                           @tip="onTipClick(t)"
                                 ></task-item>
                             </draggable>
                         </div>
@@ -79,10 +80,10 @@ import TaskEditor from "./TaskEditor.vue";
 import Task from "../models/Task";
 import {ComplexityTypes} from "../consts";
 import _ from 'lodash';
-import Discipline from "../models/Discipline";
 import CopyTasksModal from "./CopyTasksModal.vue";
 import TaskGroup from "../models/TaskGroup";
-import has = Reflect.has;
+import {shell} from "electron";
+
 
 @Component({
     components: {CopyTasksModal, TaskEditor, TaskItem, draggable},
@@ -281,6 +282,11 @@ export default class LabPage extends Vue {
         await task_group.save()
         await this.$store.dispatch("fetchTaskGroups")
         this.activeTaskGroup = task_group.id
+    }
+
+    async onTipClick(t) {
+        let href = `http://localhost:4000/tasks/${t.id}`
+        await shell.openExternal(href);
     }
 }
 </script>

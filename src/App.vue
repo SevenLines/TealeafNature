@@ -11,17 +11,31 @@
                             <i class="fad fa-moon"></i>
                         </b-checkbox>
                     </div>
-                    <b-breadcrumb v-if="breadcrumbs.length" class="mr-2">
-                        <b-breadcrumb-item :to="item.to" v-for="item in breadcrumbs" :key="item.to">
-                            <span v-html="item.title"></span>
-                        </b-breadcrumb-item>
-                    </b-breadcrumb>
+                    <div class="d-flex flex-shrink-0 align-items-center">
+                        <b-breadcrumb v-if="breadcrumbs.length" class="mr-2">
+                            <b-breadcrumb-item :to="item.to" v-for="item in breadcrumbs" :key="item.to">
+                                <span v-html="item.title"></span>
+                            </b-breadcrumb-item>
+                        </b-breadcrumb>
+                        <div v-if="jekyllProcess || activeDiscipline.id">
+                            <button class="btn btn-success" v-if="jekyllProcess" @click="onStopJekyllProcess">
+                                <i class="fas fa-stop"></i>
+                            </button>
+                            <button class="btn btn-danger" v-else-if="activeDiscipline.id" @click="onLaunchJekyllProcess">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
                 </b-container>
             </b-navbar>
+            <div class="console overflow-auto p-3" :class="{'active': consoleActive}" ref="log">
+                <span v-for="(log, index) in jekyllProcessLog" :key="index">&gt; <span v-html="log"></span></span>
+            </div>
             <div class="flex-grow-1 overflow-auto">
                 <router-view/>
             </div>
         </div>
+
         <notifications group="messages"/>
     </div>
 </template>
@@ -36,13 +50,49 @@ import {mapState} from "vuex";
         ...mapState({
             activeDiscipline: "activeDiscipline",
             activeLab: "activeLab",
+            consoleActive: "consoleActive",
+            jekyllProcess: "jekyllProcess",
+            jekyllProcessLog: "jekyllProcessLog",
         })
     }
 })
 export default class App extends Vue {
     private activeDiscipline!: any
     private activeLab!: any
+    private jekyllProcess!: any
+    private consoleActive!: any
     darkTheme = false;
+
+    created() {
+
+    }
+
+    mounted() {
+        document.addEventListener("keydown", this.onKey);
+    }
+
+    beforeDestroy() {
+        document.removeEventListener("keydown", this.onKey);
+    }
+
+    @Watch("consoleActive")
+    onConsoleActiveChange () {
+        this.$refs.log.scrollTop = this.$refs.log.scrollHeight
+    }
+
+    @Watch("jekyllProcessLog", {deep: true})
+    onJekyllProcessChange () {
+        this.$nextTick(() => {
+            this.$refs.log.scrollTop = this.$refs.log.scrollHeight
+        })
+    }
+
+    onKey(e: any) {
+        if (e.ctrlKey && (e.keyCode == 192)) {
+            e.preventDefault();
+            this.$store.commit("setConsoleActive", !this.consoleActive)
+        }
+    }
 
     get breadcrumbs() {
         let result = []
@@ -70,11 +120,21 @@ export default class App extends Vue {
 
         return result
     }
+
+    onStopJekyllProcess() {
+        this.$store.dispatch("killJekyllProcess")
+    }
+
+    onLaunchJekyllProcess() {
+        this.$store.dispatch("runJekyllProcess")
+    }
+
 }
 </script>
 
 <style lang="scss">
 @import "bootstrap-dark-theme";
+
 #app {
     .breadcrumb {
         margin-bottom: 0;
@@ -88,5 +148,27 @@ export default class App extends Vue {
     color: #839496;
     text-align: left;
     background-color: #002b36;
+}
+
+.console {
+    font-family: Courier, "Courier New", monospace;
+    font-size: 14px;
+    position: absolute;
+    top: -100vh;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    background-color: black;
+    color: white;
+    z-index: 1000;
+    box-sizing: border-box;
+    opacity: 0;
+
+    transition: all 0.3s;
+
+    &.active {
+        top: 0;
+        opacity: 0.95;
+    }
 }
 </style>
