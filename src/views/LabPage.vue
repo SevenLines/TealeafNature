@@ -76,7 +76,7 @@ import Component from "vue-class-component";
 import TaskItem from "./TaskItem.vue";
 import draggable from 'vuedraggable'
 import TaskEditor from "./TaskEditor.vue";
-import Task, {ITask} from "../models/Task";
+import Task from "../models/Task";
 import {ComplexityTypes} from "../consts";
 import _ from 'lodash';
 import Discipline from "../models/Discipline";
@@ -165,7 +165,7 @@ export default class LabPage extends Vue {
         }
     }
 
-    async onSaveTaskClick(task_form: ITask, buttonClicked) {
+    async onSaveTaskClick(task_form, buttonClicked) {
         this.activeTask.title = task_form.title;
         this.activeTask.order = task_form.order;
         this.activeTask.custom_class = task_form.custom_class;

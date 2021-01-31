@@ -44,9 +44,9 @@
 import Component from "vue-class-component";
 import {Prop, Vue, Watch} from "vue-property-decorator";
 import MarkdownEditor from "./MarkdownEditor.vue";
-import {ITask} from "../models/Task";
 import DifficultSelector from "./DifficultSelector.vue";
 import {previewRenderFunc, uploadFileFunc} from "../utils";
+import Task from "../models/Task";
 
 @Component({
     components: {DifficultSelector, MarkdownEditor}
@@ -54,7 +54,7 @@ import {previewRenderFunc, uploadFileFunc} from "../utils";
 export default class TaskEditor extends Vue {
     @Prop() task!: any;
 
-    form: ITask | null = {
+    form: any = {
         title: null,
         tags: null,
         order: null,

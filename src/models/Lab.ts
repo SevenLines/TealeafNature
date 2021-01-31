@@ -62,8 +62,8 @@ export default class Lab extends Model {
     @Column(DataTypes.BOOLEAN)
     visible: boolean;
 
-    getTasks;
-    getDiscipline;
+    getTasks: Function;
+    getDiscipline: Function;
 }
 
 Lab.hasMany(Task, {

@@ -57,6 +57,6 @@ export default class Task extends Model {
     @Column(DataTypes.STRING)
     youtube_link: string;
 
-    getLab;
-    getTaskGroup;
+    getLab: Function;
+    getTaskGroup: Function;
 }
