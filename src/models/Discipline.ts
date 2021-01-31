@@ -9,13 +9,29 @@ const yaml = require('js-yaml')
 import fs from 'fs'
 import fsExtra from 'fs-extra';
 import path from "path";
+import {Table, Column} from "./decorators";
 
 
-export class Discipline extends Model {
+@Table({
+    sequelize: db,
+    modelName: "Discipline",
+    tableName: "lessons_discipline",
+    createdAt: false,
+    updatedAt: "modified_at"
+})
+export default class Discipline extends Model {
     id: number;
+
+    @Column(DataTypes.STRING)
     title: string;
+
+    @Column(DataTypes.DATE)
     modified_at: Date;
+
+    @Column(DataTypes.STRING)
     jekyll_folder: string;
+
+    @Column(DataTypes.STRING)
     deploy_command: string;
 
     getLabs: Function;
@@ -137,31 +153,9 @@ header: <a href="/labs/${lab.alias}">${lab.title}</a> / подсказка к ${
     }
 }
 
-Discipline.init({
-    title: {
-        type: DataTypes.STRING,
-    },
-    modified_at: {
-        type: DataTypes.DATE,
-    },
-    jekyll_folder: {
-        type: DataTypes.STRING,
-    },
-    deploy_command: DataTypes.STRING,
-}, {
-    sequelize: db,
-    modelName: "Discipline",
-    tableName: "lessons_discipline",
-    createdAt: false,
-    updatedAt: "modified_at"
-});
-
 Discipline.hasMany(Lab, {
     foreignKey: {
         field: "discipline_id"
     }
 })
 Lab.belongsTo(Discipline)
-
-
-export default Discipline

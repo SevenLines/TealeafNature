@@ -2,38 +2,9 @@ import Lab from "./Lab";
 const {DataTypes} = require('sequelize');
 import {db} from '../db';
 import {InstanceDestroyOptions, Model} from "sequelize";
-import {HookReturn} from "sequelize/types/lib/hooks";
+import {Column, Table} from "./decorators";
 
-export class Task extends Model {
-    title: string;
-    complexity: number;
-    content: string;
-    additional_content: string;
-    order: number;
-    tags: string;
-    visible: boolean;
-    group_id: number;
-    lab_id: number;
-    custom_class: string;
-    youtube_link: string;
-
-    getLab;
-    getTaskGroup;
-}
-
-Task.init({
-    title: DataTypes.STRING,
-    complexity: DataTypes.NUMBER,
-    content: DataTypes.STRING,
-    additional_content: DataTypes.STRING,
-    order: DataTypes.NUMBER,
-    tags: DataTypes.ARRAY(DataTypes.STRING),
-    visible: DataTypes.BOOLEAN,
-    group_id: DataTypes.NUMBER,
-    lab_id: DataTypes.NUMBER,
-    custom_class: DataTypes.STRING,
-    youtube_link: DataTypes.STRING,
-}, {
+@Table({
     sequelize: db,
     modelName: "Task",
     tableName: "lessons_task",
@@ -51,19 +22,41 @@ Task.init({
         }
     }
 })
+export default class Task extends Model {
 
-export interface ITask {
-    title: string,
-    complexity: number,
-    content: string,
-    additional_content: string,
-    order: number,
-    tags: string,
-    visible: boolean,
-    group_id: number,
-    lab_id: number,
-    custom_class: string,
-    youtube_link: string,
+    @Column(DataTypes.STRING)
+    title: string;
+
+    @Column(DataTypes.NUMBER)
+    complexity: number;
+
+    @Column(DataTypes.STRING)
+    content: string;
+
+    @Column(DataTypes.STRING)
+    additional_content: string;
+
+    @Column(DataTypes.NUMBER)
+    order: number;
+
+    @Column(DataTypes.ARRAY(DataTypes.STRING))
+    tags: string;
+
+    @Column(DataTypes.BOOLEAN)
+    visible: boolean;
+
+    @Column(DataTypes.NUMBER)
+    group_id: number;
+
+    @Column(DataTypes.NUMBER)
+    lab_id: number;
+
+    @Column(DataTypes.STRING)
+    custom_class: string;
+
+    @Column(DataTypes.STRING)
+    youtube_link: string;
+
+    getLab;
+    getTaskGroup;
 }
-
-export default Task
