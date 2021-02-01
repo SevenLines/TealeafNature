@@ -6,6 +6,7 @@ import * as fs from "fs";
 import _ from 'lodash';
 import path from "path";
 import {execAsync, spawnAsync} from "../utils";
+import {options} from "../db";
 
 const child_process = require('child_process');
 const kill = require('tree-kill');
@@ -26,6 +27,8 @@ export default new Vuex.Store({
         jekyllProcess: null,
         jekyllProcessLog: [],
         activeDisciplineArticles: [],
+        options: options,
+        loading: false,
     },
     mutations: {
         setDisciplines(state, disciplines) {
@@ -59,26 +62,38 @@ export default new Vuex.Store({
         },
         clearJekyllLog(state) {
             state.jekyllProcessLog = []
+        },
+        setLoading(state, loading) {
+            state.loading = loading;
         }
     },
     actions: {
         async fetchDisciplines({commit}) {
+            commit("setLoading", true)
             let r = await Discipline.findAll({order: [["title", "DESC"]]});
             commit("setDisciplines", r)
+            commit("setLoading", false)
         },
         async fetchLabs({commit, state}) {
+            commit("setLoading", true)
             let r = await (state.activeDiscipline as any).getLabs({order: ["order"]});
             commit("setLabs", r)
+            commit("setLoading", false)
         },
         async fetchTasks({commit, state}) {
+            commit("setLoading", true)
             let r = await (state.activeLab as any).getTasks({order: ["group_id", "order"]});
             commit("setTasks", r)
+            commit("setLoading", false)
         },
         async fetchTaskGroups({commit, state}) {
+            commit("setLoading", true)
             let r = await (state.activeLab as any).getTaskGroups({order: ["order"]});
             commit("setTaskGroups", r)
+            commit("setLoading", false)
         },
         async setActiveDisciplineId({commit, state, dispatch}, disciplineId) {
+            commit("setLoading", true)
             commit("setLabs", [])
             commit("setTasks", [])
             commit("setTaskGroups", [])
@@ -91,8 +106,10 @@ export default new Vuex.Store({
             } else {
                 commit("setActiveDiscipline", {})
             }
+            commit("setLoading", false)
         },
         async setActiveLabId({commit, state, dispatch}, labId) {
+            commit("setLoading", true)
             commit("setLabs", [])
             commit("setTasks", [])
             commit("setTaskGroups", [])
@@ -103,30 +120,37 @@ export default new Vuex.Store({
             commit("setActiveLab", lab)
             await dispatch("fetchTasks")
             await dispatch("fetchTaskGroups")
+            commit("setLoading", false)
         },
         async updateTasksOrder({commit, state, dispatch}, tasks) {
+            commit("setLoading", true)
             for (const t of tasks) {
                 let index = tasks.indexOf(t);
                 t.order = index + 1
                 await t.save()
             }
             await dispatch("fetchTasks")
+            commit("setLoading", false)
         },
         async updateLabsOrder({commit, state, dispatch}, labs) {
+            commit("setLoading", true)
             for (const t of labs) {
                 let index = labs.indexOf(t);
                 t.order = index + 1
                 await t.save()
             }
             await dispatch("fetchLabs")
+            commit("setLoading", false)
         },
         async updateTaskGroupsOrder({commit, state, dispatch}, taskGroups) {
+            commit("setLoading", true)
             for (const t of taskGroups) {
                 let index = taskGroups.indexOf(t);
                 t.order = index + 1
                 await t.save()
             }
             await dispatch("fetchTaskGroups")
+            commit("setLoading", false)
         },
         async fetchActiveDisciplineArticles({state, commit}) {
             let files = [];

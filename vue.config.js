@@ -16,8 +16,15 @@ module.exports = {
                     {
                         "from": "icon.png",
                         "to": "icon.png",
+                    },
+                    {
+                        "from": "src/sequelize/config.json",
+                        "to": "config.json",
                     }
                 ]
+            },
+            directories: {
+                buildResources: "resources"
             }
         }
     },

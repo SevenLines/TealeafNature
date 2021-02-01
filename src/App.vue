@@ -31,9 +31,9 @@
             <div class="console overflow-auto p-3" :class="{'active': consoleActive}" ref="log">
                 <span v-for="(log, index) in jekyllProcessLog" :key="index">&gt; <span v-html="log"></span></span>
             </div>
-            <div class="flex-grow-1 overflow-auto">
-                <router-view/>
-            </div>
+                <b-overlay class="flex-grow-1 overflow-auto" :show="loading" rounded="sm">
+                    <router-view/>
+                </b-overlay>
         </div>
 
         <notifications group="messages"/>
@@ -53,6 +53,8 @@ import {mapState} from "vuex";
             consoleActive: "consoleActive",
             jekyllProcess: "jekyllProcess",
             jekyllProcessLog: "jekyllProcessLog",
+            options: "options",
+            loading: "loading",
         })
     }
 })
