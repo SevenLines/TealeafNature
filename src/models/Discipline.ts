@@ -40,6 +40,10 @@ export default class Discipline extends Model {
     getLabs: Function;
 
     async generateLabsYaml() {
+        if (!fs.existsSync(this.jekyll_folder)) {
+            return;
+        }
+
         let data = {
             'order': [],
             'labs': {},

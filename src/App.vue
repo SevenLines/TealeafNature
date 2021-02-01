@@ -18,10 +18,15 @@
                             </b-breadcrumb-item>
                         </b-breadcrumb>
                         <div v-if="jekyllProcess || activeDiscipline.id">
-                            <button class="btn btn-success" v-if="jekyllProcess" @click="onStopJekyllProcess">
-                                <i class="fas fa-stop"></i>
-                            </button>
-                            <button class="btn btn-danger" v-else-if="activeDiscipline.id" @click="onLaunchJekyllProcess">
+                            <div v-if="jekyllProcess" class="btn-group btn-group-sm">
+                                <button class="btn btn-sm btn-success"  @click="onStopJekyllProcess">
+                                    <i class="fas fa-stop"></i>
+                                </button>
+                                <button @click="onLinkOpen" class="btn btn-sm btn-info">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            </div>
+                            <button class="btn btn-sm btn-danger" v-else-if="activeDiscipline.id" @click="onLaunchJekyllProcess">
                                 <i class="fas fa-play"></i>
                             </button>
                         </div>
@@ -44,6 +49,7 @@
 import {Vue, Watch} from "vue-property-decorator";
 import Component from "vue-class-component";
 import {mapState} from "vuex";
+import {shell} from "electron";
 
 @Component({
     computed: {
@@ -129,6 +135,11 @@ export default class App extends Vue {
 
     onLaunchJekyllProcess() {
         this.$store.dispatch("runJekyllProcess")
+    }
+
+    onLinkOpen () {
+        let href = `http://localhost:4000/`
+        shell.openExternal(href);
     }
 
 }
