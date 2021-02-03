@@ -6,7 +6,6 @@ import * as fs from "fs";
 import _ from 'lodash';
 import path from "path";
 import {execAsync, spawnAsync} from "../utils";
-import {options} from "../db";
 
 const child_process = require('child_process');
 const kill = require('tree-kill');
@@ -27,7 +26,6 @@ export default new Vuex.Store({
         jekyllProcess: null,
         jekyllProcessLog: [],
         activeDisciplineArticles: [],
-        options: options,
         loading: false,
     },
     mutations: {

@@ -59,7 +59,8 @@ export default class ConfigStore {
     }
 
     get sequelize(): Options {
-        return _.get(this.options, "sequelize", this.defaultOptions.sequelize)
+        let options = this.options
+        return _.get(options, "sequelize", this.defaultOptions.sequelize)
     }
 
     set sequelize(value: Options) {

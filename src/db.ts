@@ -6,6 +6,7 @@ import path from "path";
 import ConfigStore from "./store/config_store";
 
 
+console.log(ConfigStore.instance.sequelize)
 
 export const db = new Sequelize({
    ...ConfigStore.instance.sequelize,
