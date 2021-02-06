@@ -83,6 +83,9 @@ import _ from 'lodash';
 import CopyTasksModal from "./CopyTasksModal.vue";
 import TaskGroup from "../models/TaskGroup";
 import {shell} from "electron";
+import Lab from "../models/Lab";
+import sequelize from 'sequelize'
+import {db} from "../db";
 
 
 @Component({
@@ -96,7 +99,7 @@ import {shell} from "electron";
 })
 export default class LabPage extends Vue {
     public activeTask: any = null;
-    public activeLab!: any;
+    public activeLab!: Lab;
     public activeTaskGroup = -1;
     public newTaskGroupTitle = "";
 
@@ -214,15 +217,28 @@ export default class LabPage extends Vue {
     }
 
     async onCopyTasksConfirm(tasks) {
+        let tas = await this.activeLab.getTasks({
+            attributes: [[sequelize.fn('max', sequelize.col('order')), 'max_order']],
+            raw: true,
+        });
+
+        let maxOrder = 0;
+        if (tas.length > 0) {
+            maxOrder = tas[0].max_order
+        }
+
+        let i = 1;
         for (const t of tasks) {
             let data = t.get({plain: true})
             delete data.id
             data.lab_id = this.activeLab.id
+            data.order = maxOrder + i
             data.LabId = this.activeLab.id
             data.group_id = this.activeTaskGroup == -1 ? null : this.activeTaskGroup
             data.TaskGroupId = this.activeTaskGroup == -1 ? null : this.activeTaskGroup
             await Task.create(data)
             await this.$store.dispatch("fetchTasks")
+            i++;
         }
     }
 

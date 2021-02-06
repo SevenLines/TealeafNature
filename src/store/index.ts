@@ -180,6 +180,12 @@ export default new Vuex.Store({
                 this.state.jekyllProcess = null
             }
         },
+        async backupDatabase({state}) {
+            if (state.jekyllProcess) {
+                kill(this.state.jekyllProcess.pid)
+                this.state.jekyllProcess = null
+            }
+        },
         async runJekyllProcess({state, commit}) {
             if (state.jekyllProcess) {
                 kill(this.state.jekyllProcess.pid)

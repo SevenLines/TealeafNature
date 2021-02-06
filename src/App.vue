@@ -10,6 +10,9 @@
                         <b-checkbox v-model="darkTheme">
                             <i class="fad fa-moon"></i>
                         </b-checkbox>
+                        <b-button class="ml-2" variant="outline-info" v-b-modal.optionsModal>
+                            <i class="fad fa-cog"></i>
+                        </b-button>
                     </div>
                     <div class="d-flex flex-shrink-0 align-items-center">
                         <b-breadcrumb v-if="breadcrumbs.length" class="mr-2">
@@ -41,6 +44,10 @@
                 </b-overlay>
         </div>
 
+        <b-modal id="optionsModal">
+            <options/>
+        </b-modal>
+
         <notifications group="messages"/>
     </div>
 </template>
@@ -50,8 +57,10 @@ import {Vue, Watch} from "vue-property-decorator";
 import Component from "vue-class-component";
 import {mapState} from "vuex";
 import {shell} from "electron";
+import Options from "./views/Options.vue";
 
 @Component({
+    components: {Options},
     computed: {
         ...mapState({
             activeDiscipline: "activeDiscipline",

@@ -124,7 +124,7 @@ task_group_id: ${t.group_id || 0}
 task_id: ${t.id}
 task_order: ${order}
 title:  ${order + 1} / ${title}
-header: <a href="/labs/${lab.alias}">${lab.title}</a> / подсказка к ${order + 1} задачке
+header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / подсказка к ${order + 1} задачке
 ---
             `
                     await fs.writeFile(filename, taskFileContent, err => {
