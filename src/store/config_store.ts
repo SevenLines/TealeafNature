@@ -40,6 +40,10 @@ export default class ConfigStore {
         return ConfigStore._instance
     }
 
+    get userPath() {
+        return this._userPath;
+    }
+
     get options() {
         if (!fs.existsSync(this._userPath))
             fs.mkdirSync(this._userPath)

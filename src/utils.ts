@@ -3,7 +3,7 @@ import fs from "fs";
 import {Buffer} from "buffer";
 import marked from "marked";
 import _ from 'lodash'
-import {exec, ExecOptions, spawn} from "child_process";
+import {exec, ExecOptions, spawn, SpawnOptions} from "child_process";
 
 export async function uploadFileFunc(file: File, jekyll_folder) {
     let assets_folder = path.join('assets', "tasks");
@@ -27,7 +27,7 @@ export async function uploadFileFunc(file: File, jekyll_folder) {
     }
 }
 
-export async function execAsync(command, options: ExecOptions, onData?) {
+export async function execAsync(command, options, onData?) {
     return new Promise<any>((resolve, reject) => {
         let ps = exec(command, options, (error: any) => {
             resolve(error)

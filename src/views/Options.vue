@@ -1,12 +1,13 @@
 <template>
-    <div>
-      <b-form-input
-      id="inline-form-input-name"
-      class="mb-2 mr-sm-2 mb-sm-0"
-      placeholder="Jane Doe"
-    ></b-form-input>
-
-    </div>
+    <b-modal ref="modal">
+        <b-form-input
+            id="inline-form-input-name"
+            class="mb-2 mr-sm-2 mb-sm-0"
+        ></b-form-input>
+        <b-form-group>
+            <b-button @click="onBackupCreateClick">Создать бэкап</b-button>
+        </b-form-group>
+    </b-modal>
 </template>
 
 <script>
@@ -16,12 +17,18 @@ import {mapState} from "vuex";
 
 @Component({
     computed: {
-        ...mapState({
-
-        })
+        ...mapState({})
     }
 })
 export default class Options extends Vue {
+    onBackupCreateClick() {
+        this.$refs.modal.hide();
+        this.$store.dispatch("backupDatabase");
+    }
+
+    show() {
+        this.$refs.modal.show();
+    }
 }
 </script>
 

@@ -6,9 +6,12 @@ import * as fs from "fs";
 import _ from 'lodash';
 import path from "path";
 import {execAsync, spawnAsync} from "../utils";
+import Options from "../views/Options.vue";
+import ConfigStore from "./config_store";
 
 const child_process = require('child_process');
 const kill = require('tree-kill');
+const Iconv = require('iconv').Iconv;
 
 
 Vue.use(Vuex)
@@ -180,11 +183,23 @@ export default new Vuex.Store({
                 this.state.jekyllProcess = null
             }
         },
-        async backupDatabase({state}) {
-            if (state.jekyllProcess) {
-                kill(this.state.jekyllProcess.pid)
-                this.state.jekyllProcess = null
-            }
+        async backupDatabase({state, commit}) {
+            let sequelize = ConfigStore.instance.sequelize;
+
+            commit("clearJekyllLog")
+            commit("setConsoleActive", true)
+
+            let main_command = `pg_dump -h ${sequelize.host} -U ${sequelize.username} --create --if-exists --clean --file="backup${(new Date().toISOString()).replace(/[-:\\.]/g, "_")}.sql" -v ${sequelize.database}`;
+
+            let encoding = "cp1251";
+            await execAsync(`${main_command}`, {
+                cwd: ConfigStore.instance.userPath,
+                encoding: encoding
+            }, (data) => {
+                let iconv = new Iconv(encoding, 'UTF-8');
+                commit("pushJekyllLogItem", `${iconv.convert(data)}\n`)
+            });
+            commit("pushJekyllLogItem", "dumping complete")
         },
         async runJekyllProcess({state, commit}) {
             if (state.jekyllProcess) {

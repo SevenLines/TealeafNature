@@ -10,7 +10,7 @@
                         <b-checkbox v-model="darkTheme">
                             <i class="fad fa-moon"></i>
                         </b-checkbox>
-                        <b-button class="ml-2" variant="outline-info" v-b-modal.optionsModal>
+                        <b-button class="ml-2" variant="outline-info" @click="$refs.optionsModal.show()">
                             <i class="fad fa-cog"></i>
                         </b-button>
                     </div>
@@ -44,9 +44,7 @@
                 </b-overlay>
         </div>
 
-        <b-modal id="optionsModal">
-            <options/>
-        </b-modal>
+        <options ref="optionsModal"/>
 
         <notifications group="messages"/>
     </div>
@@ -56,8 +54,10 @@
 import {Vue, Watch} from "vue-property-decorator";
 import Component from "vue-class-component";
 import {mapState} from "vuex";
-import {shell} from "electron";
+import {remote, shell} from "electron";
 import Options from "./views/Options.vue";
+
+const app = remote.app
 
 @Component({
     components: {Options},
@@ -81,7 +81,9 @@ export default class App extends Vue {
     darkTheme = false;
 
     created() {
-
+        app.on('before-quit', () => {
+          this.$store.dispatch("killJekyllProcess")
+        })
     }
 
     mounted() {
