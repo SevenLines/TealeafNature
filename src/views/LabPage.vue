@@ -86,6 +86,9 @@ import {shell} from "electron";
 import Lab from "../models/Lab";
 import sequelize from 'sequelize'
 import {db} from "../db";
+import path from "path";
+import fsExtra from 'fs-extra';
+import fs from "fs";
 
 
 @Component({
@@ -228,8 +231,41 @@ export default class LabPage extends Vue {
         }
 
         let i = 1;
+        let regexp = /\!\[\]\((.*?)\)/gm;
+        let lab = await tasks[0].getLab();
+        let discipline = await lab.getDiscipline();
+
         for (const t of tasks) {
             let data = t.get({plain: true})
+            let items = [
+                ...data.content.matchAll(regexp),
+                ...data.additional_content.matchAll(regexp),
+            ];
+            items = items.map(i => {
+                let new_match = path.join("copied", discipline.id.toString(), lab.id.toString(), path.basename(i[1]))
+                let pth = path.join("assets", new_match).replace(/\\/g, "/");
+                let to = path.join(this.activeDiscipline.jekyll_folder, "assets", new_match);
+
+                let dir = path.dirname(to);
+                console.log(dir);
+                if (!fs.existsSync(dir)) {
+                    fs.mkdirSync(dir, { recursive: true });
+                }
+
+                return {
+                    "match": i[0],
+                    "from": path.join(discipline.jekyll_folder, i[1]),
+                    "new_match": `![](/${pth})`,
+                    "to": to,
+                }
+            })
+
+            for(const item of items) {
+                fsExtra.copySync(item.from, item.to)
+                data.content = data.content.replace(item['match'], item['new_match'])
+                data.additional_content = data.additional_content.replace(item['match'], item['new_match'])
+            }
+
             delete data.id
             data.lab_id = this.activeLab.id
             data.order = maxOrder + i
