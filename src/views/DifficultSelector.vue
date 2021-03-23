@@ -49,6 +49,10 @@
                 'class': "nightmare",
                 value: ComplexityTypes.nightmare,
             },
+             {
+                'class': "info",
+                value: ComplexityTypes.info,
+            },
         ];
 
         public selectedItemId = 0;
@@ -102,6 +106,9 @@
             }
             &.nightmare {
                 @include complex($NIGHTMARE_COLOR);
+            }
+            &.info {
+                @include complex($INFO_COLOR);
             }
         }
     }

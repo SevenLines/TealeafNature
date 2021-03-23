@@ -4,6 +4,7 @@ export enum ComplexityTypes {
     medium = 2,
     hard = 3,
     nightmare = 4,
+    info = 5,
 }
 
 export enum StudentTaskStatuses {

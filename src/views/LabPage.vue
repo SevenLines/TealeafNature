@@ -89,6 +89,7 @@ import {db} from "../db";
 import path from "path";
 import fsExtra from 'fs-extra';
 import fs from "fs";
+import Discipline from "../models/Discipline";
 
 
 @Component({
@@ -101,6 +102,7 @@ import fs from "fs";
     }
 })
 export default class LabPage extends Vue {
+    private activeDiscipline: Discipline
     public activeTask: any = null;
     public activeLab!: Lab;
     public activeTaskGroup = -1;
@@ -231,7 +233,7 @@ export default class LabPage extends Vue {
         }
 
         let i = 1;
-        let regexp = /\!\[\]\((.*?)\)/gm;
+        let regexp = /\!\[\]\((\/assets\/.*?)\)/gm;
         let lab = await tasks[0].getLab();
         let discipline = await lab.getDiscipline();
 
@@ -247,7 +249,7 @@ export default class LabPage extends Vue {
                 let to = path.join(this.activeDiscipline.jekyll_folder, "assets", new_match);
 
                 let dir = path.dirname(to);
-                console.log(dir);
+
                 if (!fs.existsSync(dir)) {
                     fs.mkdirSync(dir, { recursive: true });
                 }

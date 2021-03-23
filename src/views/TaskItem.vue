@@ -74,6 +74,9 @@ export default class TaskItem extends Vue {
             case ComplexityTypes.nightmare:
                 klass = "task nightmare";
                 break;
+            case ComplexityTypes.info:
+                klass = "task info";
+                break;
         }
 
         if (this.withSelectedCheckBox && !this.selected) {
@@ -201,6 +204,10 @@ export default class TaskItem extends Vue {
 
     &.hard {
         @include task(#ff7b8f, #ffd11c);
+    }
+
+    &.info {
+        @include task(#7bdaff, #bee3d1);
     }
 
     &.nightmare {
