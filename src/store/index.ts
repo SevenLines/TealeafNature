@@ -190,8 +190,9 @@ export default new Vuex.Store({
             commit("setConsoleActive", true)
 
             let main_command = `pg_dump -h ${sequelize.host} -U ${sequelize.username} --create --if-exists --clean --file="backup${(new Date().toISOString()).replace(/[-:\\.]/g, "_")}.sql" -v ${sequelize.database}`;
-
+            commit("pushJekyllLogItem", "start dump\n")
             let encoding = "cp1251";
+            commit("pushJekyllLogItem", main_command + "\n")
             await execAsync(`${main_command}`, {
                 cwd: ConfigStore.instance.userPath,
                 encoding: encoding
