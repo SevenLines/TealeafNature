@@ -253,14 +253,22 @@ export default new Vuex.Store({
                     })
                 }
                 let params = (state.activeDiscipline as Discipline).deploy_command.split(/\s+/)
-                let ps = child_process.spawn(params[0], params.splice(1), {
+
+                let fab = params[0]
+                let args = params.splice(1)
+                let ps = child_process.spawn(fab, args, {
                     cwd: process.cwd(),
-                },);
+                });
 
                 ps.stderr.on('data', (data) => {
                     let content = data.toString().replace(/\n|(\r\n)|(\n\r)/gi, "<br>")
                     content = content.replace(/\s/gi, "&nbsp;")
                     state.jekyllProcessLog.push(content)
+                });
+
+                ps.on('error', (err) => {
+                    console.log(err)
+                    state.jekyllProcessLog.push(`${err}\n`)
                 });
 
                 ps.on('close', (code) => {
