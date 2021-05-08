@@ -7,6 +7,7 @@ import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import EasyMDE from 'easymde';
 import marked from 'marked'
 import hljs from 'highlight.js'
+import _ from "lodash";
 
 @Component
 export default class MarkdownEditor extends Vue {
@@ -69,6 +70,16 @@ export default class MarkdownEditor extends Vue {
             this.mde.codemirror.on("change", () => {
                 if (this.mde) {
                     this.$emit("input", this.mde.value())
+                }
+            });
+            this.mde.codemirror.on("beforeChange", (cm, change) => {
+                if (change.origin === "paste") {
+                    let ltrim = _(change.text).filter(line => line.trim().length > 0).map(line => {
+                        return (line.match(/^\s+/) || [""])[0].length || 0;
+                    }).min();
+
+                    let newLines = _(change.text).map(x => x.slice(ltrim)).value();
+                    change.update(null, null, newLines);
                 }
             });
         }
