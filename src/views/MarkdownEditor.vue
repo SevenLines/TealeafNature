@@ -8,6 +8,7 @@ import EasyMDE from 'easymde';
 import marked from 'marked'
 import hljs from 'highlight.js'
 import _ from "lodash";
+import {signal} from "codemirror";
 
 @Component
 export default class MarkdownEditor extends Vue {
@@ -22,6 +23,7 @@ export default class MarkdownEditor extends Vue {
     @Prop() sideBySideFullscreen?: true;
 
     private mde?: EasyMDE;
+    private pastAsCode: boolean = false;
 
     @Watch("value", {immediate: true})
     onValueChange() {
@@ -72,13 +74,30 @@ export default class MarkdownEditor extends Vue {
                     this.$emit("input", this.mde.value())
                 }
             });
+
+            let self = this;
+            // this.mde.codemirror.setOption("extraKeys", {
+            //     "Ctrl-Alt-V"(cm) {
+            //         self.pastAsCode = true;
+            //         setTimeout(x => {
+            //             self.pastAsCode = false
+            //         }, 1000);
+            //     }
+            // })
             this.mde.codemirror.on("beforeChange", (cm, change) => {
                 if (change.origin === "paste") {
+                    console.log(change)
                     let ltrim = _(change.text).filter(line => line.trim().length > 0).map(line => {
                         return (line.match(/^\s+/) || [""])[0].length || 0;
                     }).min();
 
                     let newLines = _(change.text).map(x => x.slice(ltrim)).value();
+                    if (self.pastAsCode) {
+                        newLines.unshift("```");
+                        newLines.push("```");
+                    }
+                    self.pastAsCode = false;
+
                     change.update(null, null, newLines);
                 }
             });
