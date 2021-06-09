@@ -7,6 +7,12 @@
         </div>
         <div class="row">
             <div class="col">
+                <label>Название</label>
+                <input v-model="form.title" type="text" class="form-control">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
                 <label>Описание</label>
                 <markdown-editor v-model="form.content"
                                  min-height="200px"
@@ -15,8 +21,6 @@
                                  :upload-func="uploadFileFuncProxy"
                 />
             </div>
-        </div>
-        <div class="row">
             <div class="col">
                 <label>Подсказка</label>
                 <markdown-editor v-model="form.additional_content"

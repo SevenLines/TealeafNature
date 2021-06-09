@@ -116,15 +116,16 @@ title: ${lab.title}
 
                 if (t.additional_content) {
 
-                    let title = t.content.replace(/\n+/gi, " - ").replace(/(<([^>]+)>)/gi, "").replace(/[:!\[\]/()`']/gi, "");
+                    let title = t.title ? t.title : t.content.replace(/\n+/gi, " - ").replace(/(<([^>]+)>)/gi, "").replace(/[:!\[\]/()`']/gi, "");
+                    let task_header = t.title ? t.title :  `подсказка к ${order + 1} задачке`;
                     let taskFileContent = `--- 
 layout: task
 alias: ${lab.alias}
 task_group_id: ${t.group_id || 0}
 task_id: ${t.id}
 task_order: ${order}
-title:  ${order + 1} / ${title}
-header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / подсказка к ${order + 1} задачке
+title:  ${lab.title} / ${title}
+header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / ${task_header}
 ---
             `
                     await fs.writeFile(filename, taskFileContent, err => {
@@ -135,6 +136,7 @@ header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / подсказка 
                 let task_item = {
                     "id": t.id,
                     "description": t.content,
+                    "title": t.title,
                     "description2": t.additional_content,
                     "difficult": t.complexity,
                     "custom_class": t.custom_class,
