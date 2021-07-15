@@ -30,6 +30,8 @@ export default class ConfigStore {
     }
 
     constructor() {
+        console.log(this._configPath)
+
         if (ConfigStore._instance) {
             throw new Error("Error: Instantiation failed: Use ConfigStore.getInstance() instead of new.");
         }
@@ -48,11 +50,17 @@ export default class ConfigStore {
         if (!fs.existsSync(this._userPath))
             fs.mkdirSync(this._userPath)
 
+        console.log(`Trying to load config from ${this._configPath}`)
+
         try {
+            console.log("loading")
             let data = fs.readFileSync(this._configPath)
             this._options = JSON.parse(data.toString())
+            console.log(`loading done`)
+            console.log(this._options)
         } catch (e) {
-            this._options = _.cloneDeep(this.defaultOptions)
+            console.error(e);
+            throw new Error(`Please create ${this._configPath}`)
         }
         return this._options
     }
