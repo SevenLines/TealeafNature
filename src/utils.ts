@@ -13,8 +13,12 @@ export async function uploadFileFunc(file: File, jekyll_folder) {
         fs.mkdirSync(folder);
     }
 
-    let length = fs.readdirSync(folder).length
-    let filename = `${String(length).padStart(3, '0')}_${file.name.trim()}`
+    let files = fs.readdirSync(folder);
+    let numbers = files.map(x => x.match(/(\d+)_(.*)/i)).filter(x => x).map(x => {
+        return +x[1];
+    })
+    let maxNumber = _.max(numbers) + 1;
+    let filename = `${String(maxNumber).padStart(3, '0')}_${file.name.trim()}`
 
     let arrayBuffer = await file.arrayBuffer();
     let buffer = Buffer.from(arrayBuffer);
