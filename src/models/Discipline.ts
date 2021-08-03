@@ -144,6 +144,7 @@ header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / ${task_header}
                     "visible": t.visible,
                     "youtube_link": t.youtube_link,
                     "students": [],
+                    "subtasks": t.subtasks,
                 }
 
                 tasks.push(task_item)

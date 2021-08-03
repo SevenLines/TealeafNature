@@ -9,13 +9,15 @@
             </div>
         </div>
         <div class="sub-tasks">
-            <div class="sub-tasks--item row mb-2" v-for="(task, index) in subtasks" :key="index">
-                <div class="col item--content" v-html="contentRendered(task.content)"></div>
-                <div class="col-auto">
-                    <div class="btn btn-success mr-2" @click="onEditClick(task)"><i class="fas fa-edit"></i></div>
-                    <div class="btn btn-danger" @click="onRemoveClick(task)"><i class="fas fa-times"></i></div>
+            <draggable v-model="subtasks" group="people" @start="drag=true" @end="drag=false">
+                <div class="sub-tasks--item row mb-2" v-for="(task, index) in subtasks" :key="index">
+                    <div class="col item--content" v-html="contentRendered(task.content)"></div>
+                    <div class="col-auto">
+                        <div class="btn btn-success mr-2" @click="onEditClick(task)"><i class="fas fa-edit"></i></div>
+                        <div class="btn btn-danger" @click="onRemoveClick(task)"><i class="fas fa-times"></i></div>
+                    </div>
                 </div>
-            </div>
+            </draggable>
         </div>
 
         <b-modal ref="editSubtaskModal" @ok="onContentEditOk" ok-title="сохранить">
@@ -33,9 +35,10 @@ import {Prop, Vue, Watch} from "vue-property-decorator";
 import Task, {Subtask} from "../models/Task";
 import MarkdownEditor from "./MarkdownEditor.vue";
 import {previewRenderFunc, uploadFileFunc} from "../utils";
+import draggable from "vuedraggable";
 
 @Component({
-    components: {MarkdownEditor}
+    components: {MarkdownEditor, draggable}
 })
 export default class  SubtaskModal extends Vue {
     @Prop() activeTask!: Task;

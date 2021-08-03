@@ -10,7 +10,8 @@
                 <input v-model="form.title" placeholder="Название" type="text" class="form-control">
             </div>
             <div class="col-auto">
-                <div class="btn btn-info" @click="$emit('edit-subtask-clicked')">Сабтаски</div>
+                <div class="btn btn-info" @click="$emit('edit-subtask-clicked')">Сабтаски
+                <span class="badge badge-light" v-if="task.subtasks">{{ task.subtasks.length }}</span></div>
             </div>
         </div>
         <div class="row">
@@ -58,7 +59,7 @@ import Task from "../models/Task";
     components: {DifficultSelector, MarkdownEditor}
 })
 export default class TaskEditor extends Vue {
-    @Prop() task!: any;
+    @Prop() task!: Task;
 
     form: any = {
         title: null,
