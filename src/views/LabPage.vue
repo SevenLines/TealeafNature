@@ -44,6 +44,7 @@
                         :task="activeTask"
                         @cancel="activeTask=null"
                         @save="onSaveTaskClick"
+                        @edit-subtask-clicked="onAddSubtaskClicked"
                     >
                     </task-editor>
                 </div>
@@ -66,6 +67,7 @@
                 </draggable>
             </b-list-group>
         </b-modal>
+        <SubtaskModal  ref="editSubTasksModal" :activeTask="activeTask" @ok-clicked="onSubtasksModalOkClicked"/>
     </div>
 </template>
 
@@ -77,7 +79,7 @@ import Component from "vue-class-component";
 import TaskItem from "./TaskItem.vue";
 import draggable from 'vuedraggable'
 import TaskEditor from "./TaskEditor.vue";
-import Task from "../models/Task";
+import Task, {Subtask} from "../models/Task";
 import {ComplexityTypes} from "../consts";
 import _ from 'lodash';
 import CopyTasksModal from "./CopyTasksModal.vue";
@@ -90,10 +92,11 @@ import path from "path";
 import fsExtra from 'fs-extra';
 import fs from "fs";
 import Discipline from "../models/Discipline";
+import SubtaskModal from "./SubtaskModal.vue";
 
 
 @Component({
-    components: {CopyTasksModal, TaskEditor, TaskItem, draggable},
+    components: {SubtaskModal, CopyTasksModal, TaskEditor, TaskItem, draggable},
     computed: {
         ...mapState({
             activeDiscipline: "activeDiscipline",
@@ -174,6 +177,11 @@ export default class LabPage extends Vue {
         }
     }
 
+    async onSubtasksModalOkClicked(subtasks: Array<Subtask>) {
+        this.activeTask.subtasks = subtasks;
+        await this.SaveActiveTasks();
+    }
+
     async onSaveTaskClick(task_form, buttonClicked) {
         this.activeTask.title = task_form.title;
         this.activeTask.order = task_form.order;
@@ -184,8 +192,10 @@ export default class LabPage extends Vue {
         this.activeTask.visible = task_form.visible;
         this.activeTask.youtube_link = task_form.youtube_link;
 
-        let isNew = !this.activeTask.id;
+        await this.SaveActiveTasks();
+    }
 
+    async SaveActiveTasks(buttonClicked = false) {
         await this.activeTask.save()
         this.$notify({
             group: 'messages',
@@ -195,9 +205,14 @@ export default class LabPage extends Vue {
             text: 'Successfully task saved!'
         });
 
-        if (isNew || buttonClicked) {
-            this.activeTask = null;
+        let isNew = !this.activeTask.id;
+
+        if (isNew) {
             await this.$store.dispatch("fetchTasks")
+        }
+
+        if (buttonClicked) {
+            this.activeTask = null;
         }
     }
 
@@ -215,6 +230,10 @@ export default class LabPage extends Vue {
             lab_id: this.activeLab.id,
         })
         this.activeTask = task;
+    }
+
+    async onAddSubtaskClicked() {
+        (this.$refs.editSubTasksModal as any).show()
     }
 
     async onCopyTasksClick() {
@@ -350,8 +369,9 @@ export default class LabPage extends Vue {
 
 
     &.active {
+        height: 100%;
         padding: 1em;
-        overflow: hidden;
+        overflow-y: auto;
         flex-basis: 0;
         flex-grow: 1;
         visibility: visible;

@@ -4,6 +4,11 @@ import {db} from '../db';
 import {InstanceDestroyOptions, Model} from "sequelize";
 import {Column, Table} from "./decorators";
 
+
+export interface Subtask {
+    content: string;
+}
+
 @Table({
     sequelize: db,
     modelName: "Task",
@@ -56,6 +61,9 @@ export default class Task extends Model {
 
     @Column(DataTypes.STRING)
     youtube_link: string;
+
+    @Column(DataTypes.JSONB)
+    subtasks: Array<Subtask>
 
     getLab: Function;
     getTaskGroup: Function;

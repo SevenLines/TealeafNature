@@ -5,10 +5,12 @@
             <difficult-selector v-model="form.complexity"></difficult-selector>
             <b-button size="sm" variant="info" @click="$emit('cancel')">Отменить</b-button>
         </div>
-        <div class="row">
+        <div class="row mb-2">
             <div class="col">
-                <label>Название</label>
-                <input v-model="form.title" type="text" class="form-control">
+                <input v-model="form.title" placeholder="Название" type="text" class="form-control">
+            </div>
+            <div class="col-auto">
+                <div class="btn btn-info" @click="$emit('edit-subtask-clicked')">Сабтаски</div>
             </div>
         </div>
         <div class="row">
