@@ -37,6 +37,9 @@ export default class Discipline extends Model {
     @Column(DataTypes.STRING)
     site_url: string;
 
+    @Column(DataTypes.BOOLEAN)
+    archive: boolean;
+
     getLabs: Function;
 
     async generateLabsYaml() {
