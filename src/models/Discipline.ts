@@ -95,7 +95,7 @@ title: ${lab.title}
             lab_item['alias'] = lab.alias
             lab_item['task_done'] = {}
 
-            let task_groups = {}
+            let task_groups: any = {}
             let tasks = await lab.getTasks({order: [["order"], ["id"]]})
             let order = 0;
             for (let t of tasks) {
@@ -109,12 +109,19 @@ title: ${lab.title}
                     continue;
                 }
 
-                let task_group = setDefault(task_groups, t.group_id || 0, {
-                    'id': t.group_id || 0,
-                    'title': t.group_id ? t.getTaskGroup().title : "default",
-                    'tasks': [],
-                    'type': t.group_id ? t.getTaskGroup().type : lab.type,
-                })
+                let task_group = null;
+                if (task_groups[t.group_id]) {
+                    task_group = task_groups[t.group_id]
+                } else {
+                    let tg = await t.getTaskGroup();
+                    task_group = setDefault(task_groups, t.group_id || 0, {
+                        'id': t.group_id || 0,
+                        'title': t.group_id ? tg.title : "default",
+                        'tasks': [],
+                        'type': t.group_id ? tg.type : lab.type,
+                    })
+                }
+
                 tasks = task_group['tasks']
 
                 if (t.additional_content) {
