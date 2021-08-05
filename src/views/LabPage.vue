@@ -192,7 +192,7 @@ export default class LabPage extends Vue {
         this.activeTask.visible = task_form.visible;
         this.activeTask.youtube_link = task_form.youtube_link;
 
-        await this.SaveActiveTasks();
+        await this.SaveActiveTasks(buttonClicked);
     }
 
     async SaveActiveTasks(buttonClicked = false) {
@@ -207,7 +207,7 @@ export default class LabPage extends Vue {
 
         let isNew = !this.activeTask.id;
 
-        if (isNew) {
+        if (isNew || buttonClicked) {
             await this.$store.dispatch("fetchTasks")
         }
 

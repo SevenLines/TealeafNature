@@ -11,7 +11,7 @@
             </div>
             <div class="col-auto">
                 <div class="btn btn-info" @click="$emit('edit-subtask-clicked')">Сабтаски
-                <span class="badge badge-light" v-if="task.subtasks">{{ task.subtasks.length }}</span></div>
+                <span class="badge badge-light" v-if="task && task.subtasks">{{ task.subtasks.length }}</span></div>
             </div>
         </div>
         <div class="row">
