@@ -6,13 +6,14 @@ export function Table (options?: {}) {
     }
 }
 
-export function Column(type) {
+export function Column(type, options?: {}) {
     return function(instance, name) {
         if (!instance['table_info']) {
             instance['table_info'] = {}
         }
         instance['table_info'][name] = {
-            type
+            type,
+            ...options
         };
     }
 }

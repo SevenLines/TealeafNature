@@ -28,6 +28,7 @@ export interface Subtask {
     }
 })
 export default class Task extends Model {
+    id: number;
 
     @Column(DataTypes.STRING)
     title: string;
@@ -64,6 +65,9 @@ export default class Task extends Model {
 
     @Column(DataTypes.JSONB)
     subtasks: Array<Subtask>
+
+    @Column(DataTypes.BOOLEAN)
+    show_help_in_modal: boolean;
 
     getLab: Function;
     getTaskGroup: Function;

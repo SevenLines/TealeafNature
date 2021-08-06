@@ -25,7 +25,10 @@
                 />
             </div>
             <div class="col">
-                <label>Подсказка</label>
+                <div class="d-flex justify-content-between">
+                    <label>Подсказка</label>
+                    <b-form-checkbox class="ml-4" v-model="form.show_help_in_modal">модальное окно</b-form-checkbox>
+                </div>
                 <markdown-editor v-model="form.additional_content"
                                  min-height="200px"
                                  max-height="200px"
@@ -73,6 +76,7 @@ export default class TaskEditor extends Vue {
         additional_content: "",
         visible: null,
         lab_id: null,
+        show_help_in_modal: false,
     };
 
     previewRenderFuncProxy(text: string) {
@@ -97,6 +101,7 @@ export default class TaskEditor extends Vue {
             additional_content: this.task ? this.task.additional_content : "",
             visible: this.task ? this.task.visible : null,
             lab_id: this.task ? this.task.lab_id : null,
+            show_help_in_modal: this.task ? this.task.show_help_in_modal : null,
         }
     }
 

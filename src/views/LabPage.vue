@@ -106,7 +106,7 @@ import SubtaskModal from "./SubtaskModal.vue";
 })
 export default class LabPage extends Vue {
     private activeDiscipline: Discipline
-    public activeTask: any = null;
+    public activeTask?: Task = null;
     public activeLab!: Lab;
     public activeTaskGroup = -1;
     public newTaskGroupTitle = "";
@@ -191,6 +191,7 @@ export default class LabPage extends Vue {
         this.activeTask.additional_content = task_form.additional_content;
         this.activeTask.visible = task_form.visible;
         this.activeTask.youtube_link = task_form.youtube_link;
+        this.activeTask.show_help_in_modal = task_form.show_help_in_modal;
 
         await this.SaveActiveTasks(buttonClicked);
     }

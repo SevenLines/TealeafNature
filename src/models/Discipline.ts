@@ -155,6 +155,7 @@ header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / ${task_header}
                     "youtube_link": t.youtube_link,
                     "students": [],
                     "subtasks": t.subtasks,
+                    "show_help_in_modal": t.show_help_in_modal,
                 }
 
                 tasks.push(task_item)
