@@ -8,10 +8,12 @@ import path from "path";
 import {execAsync, spawnAsync} from "../utils";
 import Options from "../views/Options.vue";
 import ConfigStore from "./config_store";
+import {readFileSync} from "fs";
 
 const child_process = require('child_process');
 const kill = require('tree-kill');
 const Iconv = require('iconv').Iconv;
+const {Client} = require('ssh2');
 
 
 Vue.use(Vuex)
