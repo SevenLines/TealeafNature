@@ -9,6 +9,11 @@ export interface Subtask {
     content: string;
 }
 
+export interface StudentInfo {
+    id: number;
+    date_done: Date;
+}
+
 @Table({
     sequelize: db,
     modelName: "Task",
@@ -65,6 +70,9 @@ export default class Task extends Model {
 
     @Column(DataTypes.JSONB)
     subtasks: Array<Subtask>
+
+    @Column(DataTypes.JSONB)
+    students_info: Array<StudentInfo>
 
     @Column(DataTypes.BOOLEAN)
     show_help_in_modal: boolean;

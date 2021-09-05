@@ -10,6 +10,7 @@ import fs from 'fs'
 import fsExtra from 'fs-extra';
 import path from "path";
 import {Table, Column} from "./decorators";
+import {Subtask} from "./Task";
 
 
 @Table({
@@ -39,6 +40,9 @@ export default class Discipline extends Model {
 
     @Column(DataTypes.BOOLEAN)
     archive: boolean;
+
+    @Column(DataTypes.JSONB)
+    groups: Array<number>;
 
     getLabs: Function;
 
