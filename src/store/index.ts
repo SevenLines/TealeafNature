@@ -229,6 +229,7 @@ export default new Vuex.Store({
             commit("clearJekyllLog")
             commit("setConsoleActive", true)
             if (state.activeDiscipline) {
+
                 if (with_git) {
                     commit("pushJekyllLogItem", `фиксирую изменения в stage\n`)
                     await spawnAsync(`git add ${(state.activeDiscipline as Discipline).jekyll_folder}`, {
