@@ -258,9 +258,11 @@ export default new Vuex.Store({
                 let params = (state.activeDiscipline as Discipline).deploy_command.split(/\s+/)
 
                 let fab = params[0]
+                let cwd = path.dirname((path.dirname((state.activeDiscipline as Discipline).jekyll_folder)));
+                console.log(cwd);
                 let args = params.splice(1)
                 let ps = child_process.spawn(fab, args, {
-                    cwd: process.cwd(),
+                    cwd,
                 });
 
                 ps.stderr.on('data', (data) => {
