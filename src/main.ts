@@ -6,6 +6,7 @@ import "reflect-metadata";
 import {BootstrapVue, IconsPlugin} from 'bootstrap-vue'
 import Notifications from 'vue-notification'
 
+import '../src/assets/fontawesome/css/all.css'
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
