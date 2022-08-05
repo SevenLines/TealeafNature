@@ -44,7 +44,7 @@ export default class Discipline extends Model {
     @Column(DataTypes.JSONB)
     groups: Array<number>;
 
-    getLabs: Function;
+    getLabs: {(params?: any): Promise<Array<Lab>>};
 
     async generateLabsYaml() {
         if (!fs.existsSync(this.jekyll_folder)) {
@@ -175,6 +175,24 @@ header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / ${task_header}
         await fs.writeFile(filename, dump, err => {
             console.log(err)
         })
+    }
+
+    async copy() {
+        let newDiscipline = await Discipline.create({
+            ...this.get({plain: true}),
+            title: "[КОПИЯ] " + this.title,
+            id: undefined
+        });
+
+        let labs = await this.getLabs()
+        for (const l of labs) {
+            await l.copy({
+                DisciplineId: newDiscipline.id,
+                discipline_id: newDiscipline.id,
+            })
+        }
+
+        return newDiscipline;
     }
 }
 

@@ -62,8 +62,28 @@ export default class Lab extends Model {
     @Column(DataTypes.BOOLEAN)
     visible: boolean;
 
-    getTasks: Function;
+    getTasks: { (params?: any): Promise<Array<Task>> };
     getDiscipline: Function;
+
+    async copy(labParams?: any) {
+        let newLab = await Lab.create({
+            ...this.get({plain: true}),
+            ...labParams,
+            id: undefined
+        });
+
+        let tasks = await this.getTasks()
+        let newTasks = tasks.map(t => {
+            return {
+                ...t.get({plain: true}),
+                lab_id: newLab.id,
+                LabId: newLab.id,
+                id: undefined,
+            }
+        })
+        await Task.bulkCreate(newTasks)
+        return newLab
+    }
 }
 
 Lab.hasMany(Task, {

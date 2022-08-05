@@ -23,6 +23,9 @@
                     <span class="mr-2" v-if="d.archive">В архиве</span>
                     <i class="fad fa-file-archive"></i>
                 </b-button>
+                <b-button class="ml-2" size="sm" variant="outline-success" @click="onCopy(d)">
+                    <i class="fad fa-copy"></i>
+                </b-button>
                 <b-button class="ml-2" size="sm" variant="outline-danger" @click="onRemove(d)">
                     <i class="fad fa-trash"></i>
                 </b-button>
@@ -47,6 +50,7 @@ import {mapActions, mapState} from "vuex";
 import Component from "vue-class-component";
 import Discipline from "../models/Discipline";
 import {shell} from "electron";
+import Lab from "../models/Lab";
 
 @Component({
     computed: {
@@ -88,7 +92,7 @@ export default class Dashboard extends Vue {
         this.$router.push({name: 'DisciplinePage', params: {disciplineId: discipline.id.toString()}})
     }
 
-    async onRemove(discipline) {
+    async onRemove(discipline: Discipline) {
         let doDelete = await this.$bvModal.msgBoxConfirm(
             `Точно удалить дисциплину ${discipline.title}?`, {
                 title: 'Подтвердите',
@@ -105,6 +109,13 @@ export default class Dashboard extends Vue {
             await discipline.destroy();
             await this.$store.dispatch("fetchDisciplines")
         }
+    }
+
+    async onCopy(discipline: Discipline) {
+        this.$store.commit("setLoading", true);
+        await discipline.copy();
+        await this.$store.dispatch("fetchDisciplines")
+        this.$store.commit("setLoading", false);
     }
 
     onSiteUrlClick(d) {
