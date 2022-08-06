@@ -249,7 +249,7 @@ export default class LabPage extends Vue {
 
         let maxOrder = 0;
         if (tas.length > 0) {
-            maxOrder = tas[0].max_order
+            maxOrder = (tas[0] as any).max_order
         }
 
         let i = 1;

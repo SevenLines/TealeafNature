@@ -143,7 +143,9 @@ header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / ${task_header}
 ---
             `
                     await fs.writeFile(filename, taskFileContent, err => {
-                        console.log(err)
+                        if (err) {
+                            console.log(err)
+                        }
                     })
                 }
 
@@ -162,7 +164,7 @@ header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / ${task_header}
                     "show_help_in_modal": t.show_help_in_modal,
                 }
 
-                tasks.push(task_item)
+                tasks.push(task_item as any)
 
                 order++;
             }
