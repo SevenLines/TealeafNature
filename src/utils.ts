@@ -5,6 +5,9 @@ import marked from "marked";
 import _ from 'lodash'
 import {exec, ExecOptions, spawn, SpawnOptions} from "child_process";
 
+const {resolve} = require('path');
+const {readdir} = require('fs').promises;
+
 export async function uploadFileFunc(file: File, jekyll_folder) {
     let assets_folder = path.join('assets', "tasks");
     let folder = path.join(jekyll_folder, assets_folder)
@@ -63,7 +66,19 @@ export function previewRenderFunc(text: string, jekyll_folder) {
     return text;
 }
 
+export async function getFiles(dir) {
+    if (!fs.existsSync(dir)) {
+        return []
+    }
+    const dirents = await readdir(dir, {withFileTypes: true});
+    const files = await Promise.all(dirents.map((dirent) => {
+        const res = resolve(dir, dirent.name);
+        return dirent.isDirectory() ? getFiles(res) : res;
+    }));
+    return Array.prototype.concat(...files);
+}
+
 export default function setDefault(obj, prop, deflt) {
-  return _.has(obj, prop) ? obj[prop] : (obj[prop] = deflt);
+    return _.has(obj, prop) ? obj[prop] : (obj[prop] = deflt);
 }
 

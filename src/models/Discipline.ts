@@ -3,14 +3,14 @@ import Lab from "./Lab";
 const {DataTypes} = require('sequelize');
 import {db} from '../db';
 import {Model} from "sequelize";
-import setDefault from "../utils";
+import setDefault, {getFiles} from "../utils";
 
 const yaml = require('js-yaml')
-import fs from 'fs'
+import fs, {existsSync, unlink, unlinkSync} from 'fs'
 import fsExtra from 'fs-extra';
-import path from "path";
+import path, {resolve, join} from "path";
 import {Table, Column} from "./decorators";
-import {Subtask} from "./Task";
+import Task, {Subtask} from "./Task";
 
 
 @Table({
@@ -179,6 +179,34 @@ header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / ${task_header}
         })
     }
 
+    async removeUnusedImages() {
+        let labs = await this.getLabs();
+
+        let images = []
+        for (const lab of labs) {
+            images.push(...await lab.getImages());
+        }
+
+        let sources = images.map(x => {
+            return join(this.jekyll_folder, x)
+        }).filter(x => existsSync(x))
+
+        let files = await getFiles(`${this.jekyll_folder}/assets/copied`);
+        files.push(...await getFiles(`${this.jekyll_folder}/assets/tasks`));
+        let filesToRemove = files.filter(x => !sources.includes(x))
+            .filter(x => x.endsWith('.png') || x.endsWith('.gif') || x.endsWith('.jpg') || x.endsWith('.jpeg'))
+
+        if (filesToRemove.length > 0) {
+            console.log(filesToRemove)
+            if (confirm(`Точно удалить ${filesToRemove.length} картинок`)) {
+                filesToRemove.forEach(unlinkSync);
+                alert("Лишние картинки успешно удалились")
+            }
+        } else {
+            alert("Лишних картинок не найдено")
+        }
+    }
+
     async copy() {
         let newDiscipline = await Discipline.create({
             ...this.get({plain: true}),
@@ -201,6 +229,7 @@ header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / ${task_header}
 Discipline.hasMany(Lab, {
     foreignKey: {
         field: "discipline_id"
-    }
+    },
+    onDelete: "cascade",
 })
 Lab.belongsTo(Discipline)

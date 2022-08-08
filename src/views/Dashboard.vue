@@ -26,6 +26,9 @@
                 <b-button class="ml-2" size="sm" variant="outline-success" @click="onCopy(d)">
                     <i class="fad fa-copy"></i>
                 </b-button>
+                <b-button class="ml-2" size="sm" variant="outline-danger" @click="onRemoveImages(d)">
+                    <i class="fad fa-image"></i>
+                </b-button>
                 <b-button class="ml-2" size="sm" variant="outline-danger" @click="onRemove(d)">
                     <i class="fad fa-trash"></i>
                 </b-button>
@@ -51,6 +54,8 @@ import Component from "vue-class-component";
 import Discipline from "../models/Discipline";
 import {shell} from "electron";
 import Lab from "../models/Lab";
+import fs from "fs";
+import {getFiles} from "../utils";
 
 @Component({
     computed: {
@@ -109,6 +114,11 @@ export default class Dashboard extends Vue {
             await discipline.destroy();
             await this.$store.dispatch("fetchDisciplines")
         }
+    }
+
+    async onRemoveImages(discipline: Discipline) {
+        await discipline.removeUnusedImages();
+        
     }
 
     async onCopy(discipline: Discipline) {

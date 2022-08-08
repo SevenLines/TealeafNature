@@ -84,17 +84,39 @@ export default class Lab extends Model {
         await Task.bulkCreate(newTasks)
         return newLab
     }
+
+    async getImages(): Promise<Array<string>> {
+        let images: Array<string> = [];
+
+        let reg = /\!\[.*?\]\((.*?)\)/g;
+
+        let result = []
+        for(const key of ['content', 'content_additional']) {
+            result = Array.from(this[key].matchAll(reg))
+            if (result) {
+                images.push(...result.map(x => x[1]))
+            }
+        }
+
+        for (const task of await this.getTasks()) {
+            images.push(...task.getImages());
+        }
+
+        return images;
+    }
 }
 
 Lab.hasMany(Task, {
     foreignKey: {
         field: "lab_id"
-    }
+    },
+    onDelete: "cascade",
 })
 Lab.hasMany(TaskGroup, {
     foreignKey: {
         field: "lab_id"
-    }
+    },
+    onDelete: "cascade",
 })
 Task.belongsTo(Lab)
 TaskGroup.belongsTo(Lab)
