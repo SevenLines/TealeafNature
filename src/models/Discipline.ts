@@ -6,7 +6,7 @@ import {Model} from "sequelize";
 import setDefault, {getFiles} from "../utils";
 
 const yaml = require('js-yaml')
-import fs, {existsSync, unlink, unlinkSync} from 'fs'
+import fs, {existsSync, readFileSync, unlink, unlinkSync} from 'fs'
 import fsExtra from 'fs-extra';
 import path, {resolve, join} from "path";
 import {Table, Column} from "./decorators";
@@ -44,7 +44,7 @@ export default class Discipline extends Model {
     @Column(DataTypes.JSONB)
     groups: Array<number>;
 
-    getLabs: {(params?: any): Promise<Array<Lab>>};
+    getLabs: { (params?: any): Promise<Array<Lab>> };
 
     async generateLabsYaml() {
         if (!fs.existsSync(this.jekyll_folder)) {
@@ -131,7 +131,7 @@ title: ${lab.title}
                 if (t.additional_content) {
 
                     let title = t.title ? t.title : t.content.replace(/\n+/gi, " - ").replace(/(<([^>]+)>)/gi, "").replace(/[:!\[\]/()`']/gi, "");
-                    let task_header = t.title ? t.title :  `подсказка к ${order + 1} задачке`;
+                    let task_header = t.title ? t.title : `подсказка к ${order + 1} задачке`;
                     let taskFileContent = `--- 
 layout: task
 alias: ${lab.alias}
@@ -179,7 +179,7 @@ header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / ${task_header}
         })
     }
 
-    async removeUnusedImages() {
+    async getImages() {
         let labs = await this.getLabs();
 
         let images = []
@@ -187,13 +187,29 @@ header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / ${task_header}
             images.push(...await lab.getImages());
         }
 
+        let reg = /\!\[.*?\]\((.*?)\)/g;
+        let files = await getFiles(`${this.jekyll_folder}/common`);
+        for (const file of files) {
+            let text = readFileSync(file, 'utf8');
+            let result = Array.from(text.matchAll(reg))
+            if (result) {
+                images.push(...result.map(x => x[1]))
+            }
+        }
+
+        return images
+    }
+
+    async removeUnusedImages() {
+        let images = await this.getImages();
+
         let sources = images.map(x => {
             return join(this.jekyll_folder, x)
         }).filter(x => existsSync(x))
 
-        let files = await getFiles(`${this.jekyll_folder}/assets/copied`);
-        files.push(...await getFiles(`${this.jekyll_folder}/assets/tasks`));
-        let filesToRemove = files.filter(x => !sources.includes(x))
+        let filesToRemove = await getFiles(`${this.jekyll_folder}/assets/copied`);
+        filesToRemove.push(...await getFiles(`${this.jekyll_folder}/assets/tasks`));
+        filesToRemove = filesToRemove.filter(x => !sources.includes(x))
             .filter(x => x.endsWith('.png') || x.endsWith('.gif') || x.endsWith('.jpg') || x.endsWith('.jpeg'))
 
         if (filesToRemove.length > 0) {
