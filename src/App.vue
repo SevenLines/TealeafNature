@@ -56,6 +56,7 @@ import Component from "vue-class-component";
 import {mapState} from "vuex";
 import {remote, shell} from "electron";
 import Options from "./views/Options.vue";
+import Lab from "./models/Lab";
 
 const app = remote.app
 
@@ -69,6 +70,7 @@ const app = remote.app
             jekyllProcess: "jekyllProcess",
             jekyllProcessLog: "jekyllProcessLog",
             options: "options",
+            labs: "labs",
             loading: "loading",
         })
     }
@@ -78,6 +80,7 @@ export default class App extends Vue {
     private activeLab!: any
     private jekyllProcess!: any
     private consoleActive!: any
+    private labs: Array<Lab>;
     darkTheme = false;
 
     created() {

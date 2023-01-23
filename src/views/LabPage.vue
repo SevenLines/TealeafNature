@@ -101,6 +101,7 @@ import SubtaskModal from "./SubtaskModal.vue";
         ...mapState({
             activeDiscipline: "activeDiscipline",
             activeLab: "activeLab",
+            labs: "labs",
         }),
     }
 })
@@ -108,6 +109,7 @@ export default class LabPage extends Vue {
     private activeDiscipline: Discipline
     public activeTask?: Task = null;
     public activeLab!: Lab;
+    public labs!: Array<Lab>;
     public activeTaskGroup = -1;
     public newTaskGroupTitle = "";
 
@@ -192,6 +194,7 @@ export default class LabPage extends Vue {
         this.activeTask.visible = task_form.visible;
         this.activeTask.youtube_link = task_form.youtube_link;
         this.activeTask.show_help_in_modal = task_form.show_help_in_modal;
+        this.activeTask.lab_id = task_form.lab_id;
 
         await this.SaveActiveTasks(buttonClicked);
     }

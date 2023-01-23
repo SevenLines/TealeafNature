@@ -24,17 +24,18 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import {Prop, Vue, Watch} from "vue-property-decorator";
 import Component from "vue-class-component";
 import {ComplexityTypes} from "@/consts";
 import {previewRenderFunc} from "@/utils";
 import hljs from "highlight.js"
+import Task from "../models/Task";
 
 @Component({})
 export default class TaskItem extends Vue {
     @Prop() activeTask;
-    @Prop() task;
+    @Prop() task!: Task;
     @Prop({default: true}) withEditBar;
     @Prop({default: false}) withSelectedCheckBox;
     @Prop({default: false}) selected;

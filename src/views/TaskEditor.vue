@@ -47,6 +47,13 @@
                 <div class="flex-shrink-0 mr-2">Кастомный класс:</div> <b-input v-model="form.custom_class"></b-input>
             </div>
         </div>
+        <div class="row">
+            <div class="col mt-2">
+                <select class="form-control" v-model="form.lab_id">
+                    <option :value="l.id" v-for="l in labs" :key="l.id">{{l.title}}</option>
+                </select>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -57,12 +64,21 @@ import MarkdownEditor from "./MarkdownEditor.vue";
 import DifficultSelector from "./DifficultSelector.vue";
 import {previewRenderFunc, uploadFileFunc} from "../utils";
 import Task from "../models/Task";
+import {mapState} from "vuex";
+import Lab from "../models/Lab";
 
 @Component({
-    components: {DifficultSelector, MarkdownEditor}
+    components: {DifficultSelector, MarkdownEditor},
+    computed: {
+        ...mapState({
+            labs: "labs"
+        })
+    }
 })
 export default class TaskEditor extends Vue {
     @Prop() task!: Task;
+
+    private labs!: Array<Lab>;
 
     form: any = {
         title: null,

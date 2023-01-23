@@ -137,11 +137,13 @@ export default new Vuex.Store({
         },
         async updateLabsOrder({commit, state, dispatch}, labs) {
             commit("setLoading", true)
+            let promises = [];
             for (const t of labs) {
                 let index = labs.indexOf(t);
                 t.order = index + 1
-                await t.save()
+                promises.push(t.save())
             }
+            await Promise.all(promises);
             await dispatch("fetchLabs")
             commit("setLoading", false)
         },

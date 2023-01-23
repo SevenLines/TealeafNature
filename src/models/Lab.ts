@@ -63,6 +63,7 @@ export default class Lab extends Model {
     visible: boolean;
 
     getTasks: { (params?: any): Promise<Array<Task>> };
+    Tasks: Array<Task>;
     getDiscipline: Function;
 
     async copy(labParams?: any) {

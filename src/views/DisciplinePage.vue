@@ -38,6 +38,9 @@
                         Сохранить
                     </b-button>
                     <div>
+                        <b-button class="ml-2" variant="warning" v-b-modal.labTaskSortedModal @click="onLabTaskSortClick">
+                            Раскидать задачи
+                        </b-button>
                         <b-button-group>
                             <b-button class="ml-2" variant="warning" @click="onGenerateClick">
                                 Сгенерировать
@@ -119,6 +122,8 @@
                     </div>
                 </div>
             </div>
+
+            <lab-task-sorter :discipline="activeDiscipline" ref="labTaskSorterRef"/>
 
             <b-modal id="addMarkdownFileModal"
                      @show="markdownFileFormPermalink=''; markdownFileFormTitle=''"
@@ -216,12 +221,14 @@ import _ from "lodash";
 import * as fs from "fs";
 import path from "path";
 import {shell} from "electron";
+import LabTaskSorter from "./LabTaskSorter.vue";
 
 const {dialog} = require('electron').remote
 
 
 @Component({
     components: {
+        LabTaskSorter,
         MarkdownEditor,
         draggable
     },
@@ -320,6 +327,10 @@ export default class DisciplinePage extends Vue {
             content_additional: this.labToChange.content_additional,
             remark: this.labToChange.remark,
         }
+    }
+
+    onLabTaskSortClick() {
+        (this.$refs.labTaskSorterRef as any).show();
     }
 
     onLabEditClick(lab) {
