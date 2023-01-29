@@ -128,7 +128,7 @@ title: ${lab.title}
 
                 tasks = task_group['tasks']
 
-                if (t.additional_content) {
+                // if (t.additional_content) {
 
                     let title = t.title ? t.title : t.content.replace(/\n+/gi, " - ").replace(/(<([^>]+)>)/gi, "").replace(/[:!\[\]/()`']/gi, "");
                     let task_header = t.title ? t.title : `подсказка к ${order + 1} задачке`;
@@ -147,7 +147,7 @@ header: <a href="/labs/${lab.alias}.html">${lab.title}</a> / ${task_header}
                             console.log(err)
                         }
                     })
-                }
+                // }
 
                 let task_item = {
                     "id": t.id,
