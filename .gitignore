@@ -6,3 +6,4 @@ tmp/
 temp/
 fabric.yaml
 /src/sequelize/config.json
+dist_electron/
