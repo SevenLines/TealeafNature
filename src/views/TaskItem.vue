@@ -27,8 +27,8 @@
 <script lang="ts">
 import {Prop, Vue, Watch} from "vue-property-decorator";
 import Component from "vue-class-component";
-import {ComplexityTypes} from "@/consts";
-import {previewRenderFunc} from "@/utils";
+import {ComplexityTypes} from "../consts";
+import {previewRenderFunc} from "../utils";
 import hljs from "highlight.js"
 import Task from "../models/Task";
 

@@ -1,8 +1,10 @@
 # tealeaf-editor
 
+USE node 14.21.3
+
 ## Project setup
 ```
-npm install
+npm install --openssl_fips=''
 ```
 
 ### Compiles and hot-reloads for development

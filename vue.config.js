@@ -28,6 +28,19 @@ module.exports = {
             }
         }
     },
+    configureWebpack: {
+        output: {
+            hashFunction: "sha256"
+        },
+         module: {
+            rules: [
+              {
+                test: /\.node$/,
+                loader: "node-loader",
+              },
+            ],
+          },
+    }
     // configureWebpack: {
     //     output: {
     //         libraryTarget: 'commonjs'
